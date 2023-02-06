@@ -65,17 +65,6 @@ def name_is_correct(name_s: str):
     return True
 
 
-def login_is_correct(login_s: str):
-    if not login_s:
-        return False
-    if not login_s.split() or len(login_s) > 32:
-        return False
-    for i in login_s.lower():
-        if i not in "abcdefghijklmnopqrstuvwxyz0123456789_":
-            return False
-    return True
-
-
 def password_is_correct(password: str):
     if password.islower() or password.isupper() or len(password) < 8:
         return False
@@ -136,18 +125,11 @@ def signup():
         elif not name_is_correct(request.form["surname"]):
             flash("Ошибка регистрации: фамилия не удовлетворяет требованию", "danger")
             return redirect("/signup")
-        elif not login_is_correct(request.form["login"]):
-            flash("Ошибка регистрации: логин не удовлетворяет требованию", "danger")
-            return redirect("/signup")
-        elif len(request.form["email"]) > 64:
+        elif not request.form["email"]:
             flash("Ошибка регистрации: электронная почта не удовлетворяет требованию", "danger")
             return redirect("/signup")
         if request.form["password"] == request.form["password_sec"] and password_is_correct(request.form["password"]):
             db_sess = db_session.create_session()
-            existing_user = db_sess.query(User).filter(User.login == request.form["login"]).first()
-            if existing_user:
-                flash("Ошибка регистрации: кто-то уже есть с таким логином", "danger")
-                return redirect("/signup")
             existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
             if existing_user:
                 flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
@@ -156,7 +138,6 @@ def signup():
             user.name = request.form["name"]
             user.surname = request.form["surname"]
             user.email = request.form["email"]
-            user.login = request.form["login"]
             user.hashed_password = generate_password_hash(request.form["password"])
             db_sess.add(user)
             db_sess.commit()
@@ -181,8 +162,7 @@ def login():
         return render_template("login.html")
     elif request.method == "POST":
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter((User.login == request.form["login"])
-                                          | (User.email == request.form["login"])).first()
+        user = db_sess.query(User).filter(User.email == request.form["login"]).first()
         if user and check_password_hash(user.hashed_password, request.form["password"]):
             login_user(user)
             user.last_auth = datetime.datetime.now()
