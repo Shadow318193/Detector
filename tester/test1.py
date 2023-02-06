@@ -1,6 +1,7 @@
 import requests
 from data import db_session
 from data.request import Request
+from data.requesttype import RequestType
 
 
 class AvailableTester:
@@ -41,11 +42,19 @@ class AvailableTester:
         """Commiting requests to DB"""
         response = self.get_data(url)
         for country in response:
+            req_type = RequestType()
+            req_type.type = country["method"]
             req = Request()
             req.duration = country["duration"]
             req.status = country["code"]
             # req.site_id = site_id
-            # req.request_type_id = request_type_id
+            req.request_type_id = req_type.id
             db_sess = db_session.create_session()
             db_sess.add(req)
             db_sess.commit()
+
+
+# x = AvailableTester()
+# x1 = x.get_data("coin.protonmos.ru")
+# for i in x1:
+#     print(i)

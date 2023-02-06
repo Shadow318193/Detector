@@ -15,7 +15,7 @@ class Request(SqlAlchemyBase):
     site_id = db.Column(db.Integer, db.ForeignKey("sites.id"), default=1)
     site = orm.relationship("Site")
     request_type_id = db.Column(db.Integer,
-                                db.ForeignKey("requests_types.id"), default=1)
+                                db.ForeignKey("requests_types.id"))
     request_type = orm.relationship("RequestType")
 
     def __repr__(self):
