@@ -1,14 +1,14 @@
-import sqlalchemy
-from .db_session import SqlAlchemyBase
+import sqlalchemy as db
+from data.db_session import SqlAlchemyBase
 from sqlalchemy import orm
 
 
 class RequestType(SqlAlchemyBase):
     __tablename__ = 'requests_types'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
-                           autoincrement=True)
-    type = sqlalchemy.Column(sqlalchemy.String)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True,
+                   nullable=False, index=True)
+    type = db.Column(db.String)
     request = orm.relationship("Request", back_populates='request_type')
 
     def __repr__(self):

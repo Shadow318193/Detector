@@ -1,21 +1,19 @@
-import sqlalchemy
-from .db_session import SqlAlchemyBase
+import sqlalchemy as db
+from data.db_session import SqlAlchemyBase
 from sqlalchemy import orm
 
 
 class Site(SqlAlchemyBase):
     __tablename__ = 'sites'
 
-    id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True,
-                           autoincrement=True)
-    name = sqlalchemy.Column(sqlalchemy.String)
-    url = sqlalchemy.Column(sqlalchemy.String)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True,
+                   nullable=False, index=True)
+    name = db.Column(db.String)
+    url = db.Column(db.String)
     request = orm.relationship("Request", back_populates='site')
-    user_id = sqlalchemy.Column(sqlalchemy.Integer,
-                                sqlalchemy.ForeignKey("users.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = orm.relationship("User")
-
-    is_moderated = sqlalchemy.Column(sqlalchemy.Boolean)
+    is_moderated = db.Column(db.Boolean)
 
     def __repr__(self):
         return '<Site {}>'.format(self.name)
