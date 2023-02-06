@@ -1,7 +1,7 @@
 import requests
 
 
-class AvailabilTester:
+class AvailableTester:
     urls_to_parse = {"USA": "https://uk.2ipx.com:8888",
                      "UK": "https://uk.2ipx.com:8888",
                      "DE": "https://de.2ipx.com:8888",
@@ -13,9 +13,9 @@ class AvailabilTester:
     def get_data(self, url):
         data = []
         signature = requests.get("https://2ip.ru/site-availability/").text
-        signature = signature.split("var services = [")[1].split("{")[1][:-6].\
-        replace("\n", "").replace("\t", " ").replace("     ", "").\
-        split("\'")[1].split("\'")[0].split("/?")[1]
+        signature = signature.split("var services = [")[1].split("{")[1][:-6]. \
+            replace("\n", "").replace("\t", " ").replace("     ", ""). \
+            split("\'")[1].split("\'")[0].split("/?")[1]
         for country, link in self.urls_to_parse.items():
             html = requests.get(link + "/?" + signature + url, headers={
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -25,7 +25,7 @@ class AvailabilTester:
                 "Host": link.split("://")[1],
                 "Connection": "keep-alive",
                 "Referer": "https://2ip.ru/",
-                }).json()
+            }).json()
             data.append({
                 "method": country + " request",
                 "success": html["success"],
@@ -36,7 +36,7 @@ class AvailabilTester:
         return data
 
 
-# x = AvailabilTester()
-# x1 = x.get_data("coin.protonmos.ru")
-# for i in x1:
-#     print(i)
+x = AvailableTester()
+x1 = x.get_data("instagram.com")
+for i in x1:
+    print(i)
