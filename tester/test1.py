@@ -1,4 +1,6 @@
 import requests
+from data import db_session
+from data.request import Request
 
 
 class AvailableTester:
@@ -35,8 +37,15 @@ class AvailableTester:
 
         return data
 
-
-x = AvailableTester()
-x1 = x.get_data("instagram.com")
-for i in x1:
-    print(i)
+    def push_data(self, url):
+        """Commiting requests to DB"""
+        response = self.get_data(url)
+        for country in response:
+            req = Request()
+            req.duration = country["duration"]
+            req.status = country["code"]
+            # req.site_id = site_id
+            # req.request_type_id = request_type_id
+            db_sess = db_session.create_session()
+            db_sess.add(req)
+            db_sess.commit()

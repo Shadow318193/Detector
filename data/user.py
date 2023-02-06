@@ -22,4 +22,5 @@ class User(SqlAlchemyBase, UserMixin):
     site = orm.relationship("Site", back_populates='user')
 
     def __repr__(self):
-        return '<User {}>'.format(self.email)
+        return f"User {self.id}: {self.name}, {self.surname} ({self.email}) " \
+               f"admin={self.is_admin}"

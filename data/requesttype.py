@@ -12,4 +12,4 @@ class RequestType(SqlAlchemyBase):
     request = orm.relationship("Request", back_populates='request_type')
 
     def __repr__(self):
-        return '<RequestType {}>'.format(self.type)
+        return f"RequestType {self.id}: {self.type}"

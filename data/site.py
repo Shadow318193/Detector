@@ -16,4 +16,5 @@ class Site(SqlAlchemyBase):
     is_moderated = db.Column(db.Boolean)
 
     def __repr__(self):
-        return '<Site {}>'.format(self.name)
+        return f"Site {self.id}: {self.type} ({self.url}), " \
+               f"moderated={self.is_moderated}"

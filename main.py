@@ -269,4 +269,4 @@ def e500(code):
 
 if __name__ == "__main__":
     db_session.global_init("db/detector.db")
-    app.run(host="0.0.0.0", port=8080)
+    app.run(host="0.0.0.0", port=8080, debug=True)
