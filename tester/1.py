@@ -30,7 +30,7 @@ class AvailabilTester:
                 "method": country + " request",
                 "success": html["success"],
                 "duration": html["duration"],
-                "code": html["code"]
+                "code": html.get("code", 404)
             })
 
         return data
