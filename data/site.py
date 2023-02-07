@@ -8,7 +8,7 @@ class Site(SqlAlchemyBase):
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True,
                    nullable=False, index=True)
-    name = db.Column(db.String)
+    name = db.Column(db.String, default="unnamed")
     url = db.Column(db.String)
     request = orm.relationship("Request", back_populates='site')
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
