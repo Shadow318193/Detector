@@ -2,7 +2,7 @@ from data import db_session
 from data.request import Request
 from data.requesttype import RequestType
 
-from test1 import AvailableTester
+from tester.test1 import AvailableTester
 
 
 class Parser:

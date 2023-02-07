@@ -1,8 +1,8 @@
 import schedule
 import time
-from tester.test1 import AvailableTester
+from tester.main import Parser
 
-tester = AvailableTester()
+tester = Parser()
 
 schedule.every(30).seconds.do(tester.push_data, urls=["instagram.com",
                                                      "google.com"])
