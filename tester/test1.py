@@ -42,17 +42,19 @@ class AvailableTester:
         """Commiting requests to DB"""
         response = self.get_data(url)
         for country in response:
-            req_type = RequestType()
-            req_type.type = country["method"]
             req = Request()
             req.duration = country["duration"]
             req.status = country["code"]
+            db_sess = db_session.create_session()
+            req_type = db_sess.query(RequestType.id).filter_by(
+                type=country["method"]).first()
+            if not req_type:
+                req_type = RequestType()
+                req_type.type = country["method"]
             # req.site_id = site_id
             req.request_type_id = req_type.id
-            db_sess = db_session.create_session()
             db_sess.add(req)
             db_sess.commit()
-
 
 # x = AvailableTester()
 # x1 = x.get_data("coin.protonmos.ru")
