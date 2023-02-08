@@ -4,8 +4,9 @@ from tester.main import Parser
 
 tester = Parser()
 
-schedule.every(30).seconds.do(tester.push_data, urls=["instagram.com",
-                                                     "google.com"])
+
+schedule.every(20).seconds.do(tester.push_data, urls=["instagram.com",
+                                                      "google.com"])
 
 while True:
     schedule.run_pending()

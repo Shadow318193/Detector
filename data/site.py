@@ -10,9 +10,9 @@ class Site(SqlAlchemyBase):
                    nullable=False, index=True)
     name = db.Column(db.String, default="unnamed")
     url = db.Column(db.String)
-    request = orm.relationship("Request", back_populates='site')
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    user = orm.relationship("User")
+    requests = orm.relationship("Request", backref='site', lazy='dynamic')
+    # user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    # user = orm.relationship("User")
     is_moderated = db.Column(db.Boolean)
 
     def __repr__(self):

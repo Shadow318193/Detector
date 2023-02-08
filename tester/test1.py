@@ -34,10 +34,10 @@ class AvailableTester:
                     "duration": html["duration"],
                     "code": html.get("code", 404)
                 })
-
         return data
 
-
+    def __repr__(self):
+        return "AvailableTester"
 
 
 # x = AvailableTester()
