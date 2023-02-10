@@ -58,6 +58,36 @@ class DB:
             FOREIGN KEY(site_id) REFERENCES sites (id), 
             FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
         );""")
+        lst = ["DE request", "NL request", "SG request", "RU request", "USA request", "UK request"]
+        for i in lst:
+            self.connect("INSERT INTO requests_types (type) VALUES(?)", params=(i,))
+
+
+    def add_request(self, data):
+        # id сайта
+        site_id = self.connect("""
+                        SELECT id FROM sites WHERE url=?
+                        """, fetchall=True, params=(data["url"],))
+        if not site_id:
+            site_id = self.connect("""
+                            INSERT INTO sites(url) VALUES(?) RETURNING id;
+                            """, fetchall=True, params=(data["url"],))
+
+        site_id = site_id[0][0]
+        # id запроса
+        req_type_id = self.connect("""
+                        SELECT id FROM requests_types WHERE type = ?;
+                        """, fetchall=True, params=(data["method"],))
+        if not req_type_id:
+            print(f"Error unknown method: \"{data['method']}\"")
+            return -1
+
+        self.connect("""
+                        INSERT INTO requests(duration, status, site_id,
+                         request_type_id, time) VALUES(?, ?, ?, ?, TIME(\"now\"));
+                        """, params=(
+            data["duration"], data["code"], site_id,
+            req_type_id[0][0]))
 
 
 # db = DB("../db", "detector2.db")
