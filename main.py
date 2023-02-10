@@ -3,11 +3,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from data import db_session
-from data.user import User
-from data.site import Site
-from data.request import Request
-from data.requesttype import RequestType
+from data import db_api
 
 import datetime
 
@@ -53,8 +49,9 @@ login_manager.login_message = "Cмотреть данную страницу/д�
 
 @login_manager.user_loader
 def load_user(user_id: int):
-    db_sess = db_session.create_session()
-    return db_sess.query(User).filter(User.id == user_id).first()
+    # db_sess = db_session.create_session()
+    # return db_sess.query(User).filter(User.id == user_id).first()
+    pass
 
 
 def name_is_correct(name_s: str):
@@ -86,10 +83,11 @@ def password_is_correct(password: str):
 
 def update_user_auth_time():
     if current_user.is_authenticated:
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(current_user.id == User.id).first()
-        user.last_auth = datetime.datetime.now()
-        db_sess.commit()
+        # db_sess = db_session.create_session()
+        # user = db_sess.query(User).filter(current_user.id == User.id).first()
+        # user.last_auth = datetime.datetime.now()
+        # db_sess.commit()
+        pass
 
 
 def allowed_type(filename, types):
@@ -105,11 +103,12 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 @app.route("/", methods=["GET"])
 def index():
     update_user_auth_time()
-    db_sess = db_session.create_session()
-    if current_user.is_authenticated:
-        user = db_sess.query(User).filter(User.id == current_user.id).first()
-        return render_template("index.html", current_user=current_user, user=user)
+    # db_sess = db_session.create_session()
+    # if current_user.is_authenticated:
+    #     # user = db_sess.query(User).filter(User.id == current_user.id).first()
+    #     return render_template("index.html", current_user=current_user, user=user)
     return redirect("/login")
+
 
 @app.route("/signup", methods=["POST", "GET"])
 def signup():
@@ -129,20 +128,20 @@ def signup():
             flash("Ошибка регистрации: электронная почта не удовлетворяет требованию", "danger")
             return redirect("/signup")
         if request.form["password"] == request.form["password_sec"] and password_is_correct(request.form["password"]):
-            db_sess = db_session.create_session()
-            existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
-            if existing_user:
-                flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
-                return redirect("/signup")
-            user = User()
-            user.name = request.form["name"]
-            user.surname = request.form["surname"]
-            user.email = request.form["email"]
-            user.hashed_password = generate_password_hash(request.form["password"])
-            db_sess.add(user)
-            db_sess.commit()
-            login_user(user)
-            user.last_auth = datetime.datetime.now()
+            # db_sess = db_session.create_session()
+            # existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
+            # if existing_user:
+            #     flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
+            #     return redirect("/signup")
+            # user = User()
+            # user.name = request.form["name"]
+            # user.surname = request.form["surname"]
+            # user.email = request.form["email"]
+            # user.hashed_password = generate_password_hash(request.form["password"])
+            # db_sess.add(user)
+            # db_sess.commit()
+            # login_user(user)
+            # user.last_auth = datetime.datetime.now()
             flash("Регистрация прошла успешно!", "success")
             return redirect("/")
         elif password_is_correct(request.form["password"]):
@@ -161,19 +160,20 @@ def login():
             return redirect("/")
         return render_template("login.html")
     elif request.method == "POST":
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == request.form["login"]).first()
-        if user and check_password_hash(user.hashed_password, request.form["password"]):
-            login_user(user)
-            user.last_auth = datetime.datetime.now()
-            flash("Успешный вход", "success")
-            return redirect("/")
-        elif not user:
-            flash("Ошибка входа: неверный логин", "danger")
-            return redirect("/login")
-        elif not check_password_hash(user.hashed_password, request.form["password"]):
-            flash("Ошибка входа: неверный пароль", "danger")
-            return redirect("/login")
+        pass
+        # db_sess = db_session.create_session()
+        # user = db_sess.query(User).filter(User.email == request.form["login"]).first()
+        # if user and check_password_hash(user.hashed_password, request.form["password"]):
+        #     login_user(user)
+        #     user.last_auth = datetime.datetime.now()
+        #     flash("Успешный вход", "success")
+        #     return redirect("/")
+        # elif not user:
+        #     flash("Ошибка входа: неверный логин", "danger")
+        #     return redirect("/login")
+        # elif not check_password_hash(user.hashed_password, request.form["password"]):
+        #     flash("Ошибка входа: неверный пароль", "danger")
+        #     return redirect("/login")
 
 
 @app.route("/logout")
@@ -248,5 +248,6 @@ def e500(code):
 
 
 if __name__ == "__main__":
-    db_session.global_init("db/detector.db")
+    db = db_api.DB("../db", "detector2.db")
+    db.global_init()
     app.run(host="0.0.0.0", port=8080, debug=True)

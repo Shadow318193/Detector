@@ -1,8 +1,5 @@
 from data import db_session
 # from data.request import Request
-# from data.requesttype import RequestType
-# from data.site import Site
-
 from tester.test1 import AvailableTester
 
 
