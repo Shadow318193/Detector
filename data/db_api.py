@@ -11,7 +11,10 @@ class DB:
         with sqlite3.connect(self.directory + "/" + self.name) as conn:
             conn.cursor()
             if fetchall:
-                return conn.execute(text_for_execute, params).fetchall()
+                try:
+                    return conn.execute(text_for_execute, params).fetchall()
+                except:
+                    print(text_for_execute)
             else:
                 conn.execute(text_for_execute, params)
                 conn.commit()
@@ -19,30 +22,23 @@ class DB:
     def global_init(self):
         self.connect("""
             CREATE TABLE IF NOT EXISTS requests_types (
-            id INTEGER NOT NULL, 
-            type VARCHAR, 
-            PRIMARY KEY (id)
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
+            type VARCHAR
         );""")
-        self.connect("CREATE INDEX ix_requests_types_id ON requests_types (id);")
-        self.connect("""CREATE TABLE IF NOT EXISTS users (
-            id INTEGER NOT NULL, 
-            email VARCHAR(64), 
-            name VARCHAR(32) NOT NULL, 
-            surname VARCHAR(32) NOT NULL, 
-            hashed_password VARCHAR NOT NULL, 
-            is_admin BOOLEAN, 
-            creation_date DATETIME, 
-            PRIMARY KEY (id)
+        self.connect("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email VARCHAR(64),
+            name VARCHAR(32) NOT NULL,
+            surname VARCHAR(32) NOT NULL,
+            hashed_password VARCHAR NOT NULL
         );""")
-        self.connect("CREATE INDEX ix_users_id ON users (id);")
-        self.connect("CREATE UNIQUE INDEX ix_users_email ON users (email);")
         self.connect("""
         CREATE TABLE IF NOT EXISTS sites(
-            id INTEGER NOT NULL, 
-            name VARCHAR, 
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name VARCHAR DEFAULT "unnamed",
             url VARCHAR,
-            is_moderated BOOLEAN, 
-            PRIMARY KEY (id)
+            is_moderated BOOLEAN DEFAULT FALSE
         );""")
         self.connect("""
         CREATE TABLE IF NOT EXISTS users_sites (
@@ -51,20 +47,17 @@ class DB:
             FOREIGN KEY (user_id) REFERENCES users (id),
             FOREIGN KEY (site_id) REFERENCES sites (id)
             );""")
-        self.connect("CREATE INDEX ix_sites_id ON sites (id);")
         self.connect("""
         CREATE TABLE IF NOT EXISTS requests (
-            id INTEGER NOT NULL, 
+            id INTEGER PRIMARY KEY AUTOINCREMENT, 
             time DATETIME, 
             duration INTEGER, 
             status INTEGER, 
             site_id INTEGER, 
             request_type_id INTEGER, 
-            PRIMARY KEY (id), 
             FOREIGN KEY(site_id) REFERENCES sites (id), 
             FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
         );""")
-        self.connect("CREATE INDEX ix_requests_id ON requests (id);")
 
 
 # db = DB("../db", "detector2.db")
