@@ -3,13 +3,6 @@
     <div class="row pb-3">
         <div class="col pb-3">
             <div class="card" style="width: 18rem;">
-                {% if user.avatar == None and not user.is_banned %}
-                    <img src="/static/media/default.png" width="256" height="256" style="margin: 0 auto;" class="img-thumbnail mt-3" alt="{{ user.surname }} {{ user.name }}">
-                {% elif user.is_banned %}
-                    <img src="/static/media/ban.jpg" width="256" height="256" style="margin: 0 auto;" class="img-thumbnail mt-3" alt="{{ user.surname }} {{ user.name }}">
-                {% else %}
-                    <img src="/static/media/from_users/avatars/{{ user.avatar }}" style="object-fit: cover; width: 256px; height: 256px; margin: 0 auto;" class="img-thumbnail mt-3" alt="{{ user.surname }} {{ user.name }}">
-                {% endif %}
                 <div class="card-body">
                     <h5 class="card-title text-center">{{ user.surname }} {{ user.name }}</h5>
                     {% if user.is_admin %}
@@ -29,9 +22,6 @@
                 </form>
             {% endif %}
             {% endif %}
-        </div>
-        <div class="col">
-            <p>В последний раз был в сети: <i>{{ user_time }}</i></p>
         </div>
     </div>
 

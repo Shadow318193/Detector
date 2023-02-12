@@ -34,7 +34,8 @@ class DB:
             email VARCHAR(64),
             name VARCHAR(32) NOT NULL,
             surname VARCHAR(32) NOT NULL,
-            hashed_password VARCHAR NOT NULL
+            hashed_password VARCHAR NOT NULL,
+            is_admin BOOL NOT NULL
         );""")
         self.connect("""
         CREATE TABLE IF NOT EXISTS sites(

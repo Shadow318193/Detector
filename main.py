@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from data import db_api
 from data.users import User
+from data import db_session
 
 import datetime
 
@@ -50,7 +51,8 @@ login_manager.login_message = "Cмотреть данную страницу/д�
 
 @login_manager.user_loader
 def load_user(user_id: int):
-    return db.connect("""SELECT id FROM users WHERE id=?""", params=(user_id, ), fetchall=False)
+    db_sess = db_session.create_session()
+    return db_sess.query(User).filter(User.id == user_id).first()
 
 
 def name_is_correct(name_s: str):
@@ -93,7 +95,9 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 @app.route("/", methods=["GET"])
 def index():
     if current_user.is_authenticated:
-        return render_template("index.html", current_user=current_user)
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        return render_template("index.html", current_user=current_user, user=user)
     return redirect("/login")
 
 
@@ -114,16 +118,24 @@ def signup():
             flash("Ошибка регистрации: электронная почта не удовлетворяет требованию", "danger")
             return redirect("/signup")
         if request.form["password"] == request.form["password_sec"] and password_is_correct(request.form["password"]):
-            existing_user = db.connect("""SELECT id FROM users WHERE email=?""", params=(request.form["email"], ),
-                                       fetchall=False)
-            if existing_user:
-                flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
-                return redirect("/signup")
-            new_id = len(db.connect("""SELECT id FROM users""", fetchall=True)) + 1
-            par = (new_id, request.form["email"], request.form["name"], request.form["surname"],
-                   generate_password_hash(request.form["password"]))
-            db.connect("INSERT INTO users VALUES(?, ?, ?, ?, ?)", params=par, fetchall=False)
-            user = User(*par)
+            db_sess = db_session.create_session()
+            c = db_sess.query(User).count()
+            if c:
+                existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
+                if existing_user:
+                    flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
+                    return redirect("/signup")
+            user = User()
+            user.name = request.form["name"]
+            user.surname = request.form["surname"]
+            user.email = request.form["email"]
+            user.hashed_password = generate_password_hash(request.form["password"])
+            if not c:
+                user.is_admin = True
+            else:
+                user.is_admin = False
+            db_sess.add(user)
+            db_sess.commit()
             login_user(user)
             flash("Регистрация прошла успешно!", "success")
             return redirect("/")
@@ -142,22 +154,19 @@ def login():
             return redirect("/")
         return render_template("login.html")
     elif request.method == "POST":
-        user = db.connect("""SELECT id FROM users WHERE email=?""",
-                          params=(request.form["email"], ), fetchall=False)
-        if user:
-            hashed_password = db.connect("""SELECT hashed_password FROM users WHERE id=?""",
-                                         params=(user, ), fetchall=False)
-            if check_password_hash(hashed_password, request.form["password"]):
-                login_user(user)
-                flash("Успешный вход", "success")
-                return redirect("/")
-            else:
-                flash("Ошибка входа: неверный пароль", "danger")
-                return redirect("/login")
-        else:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.email == request.form["login"]).first()
+        if user and check_password_hash(user.hashed_password, request.form["password"]):
+            login_user(user)
+            user.last_auth = datetime.datetime.now()
+            flash("Успешный вход", "success")
+            return redirect("/")
+        elif not user:
             flash("Ошибка входа: неверный логин", "danger")
             return redirect("/login")
-
+        elif not check_password_hash(user.hashed_password, request.form["password"]):
+            flash("Ошибка входа: неверный пароль", "danger")
+            return redirect("/login")
 
 
 @app.route("/logout")
@@ -225,4 +234,5 @@ def e500(code):
 if __name__ == "__main__":
     db = db_api.DB("./db", "detector.db")
     db.global_init()
+    db_session.global_init("db/detector.db")
     app.run(host="0.0.0.0", port=8080, debug=True)
