@@ -18,4 +18,4 @@ class Parser:
 
 
 # p = Parser()
-# p.push_data(["instagram.com", "youtube.com"], db)
+# p.push_data(db)

@@ -20,6 +20,8 @@ class DB:
                 conn.commit()
 
     def global_init(self):
+        with open(self.directory + "/" + self.name, "a+"):
+            pass
         self.connect("""
             CREATE TABLE IF NOT EXISTS requests_types (
             id INTEGER PRIMARY KEY AUTOINCREMENT, 
@@ -61,6 +63,13 @@ class DB:
         lst = ["DE request", "NL request", "SG request", "RU request", "USA request", "UK request"]
         for i in lst:
             self.connect("INSERT INTO requests_types (type) VALUES(?)", params=(i, ))
+        lst = [("https://proton.mskobr.ru/", "Образовательный центр «Протон»"),
+               ("https://www.msu.ru/", "Московский государственный университет имени М.В.Ломоносова"),
+               ("https://mipt.ru/", "Московский физико-технический институт")]
+        for i in lst:
+            site_id = self.connect("""INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
+             RETURNING id;""",
+                                   fetchall=True, params=i)
 
     def add_request(self, data):
         # id сайта
