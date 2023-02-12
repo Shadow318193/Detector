@@ -195,7 +195,7 @@ def popular_page():
 def admin_page():
     if current_user.is_authenticated:
         if current_user.is_admin:
-            return render_template("popular.html")
+            return render_template("admin.html")
         else:
             abort(403)
     else:
