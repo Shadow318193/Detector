@@ -20,6 +20,7 @@ class DB:
                 conn.commit()
 
     def global_init(self):
+        print("Подключение к БД по адресу: " + '"' + self.directory + "/" + self.name + '"')
         with open(self.directory + "/" + self.name, "a+"):
             pass
         self.connect("""

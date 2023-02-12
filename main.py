@@ -4,6 +4,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from data import db_api
+from data.users import User
 
 import datetime
 
@@ -49,9 +50,7 @@ login_manager.login_message = "Cмотреть данную страницу/д�
 
 @login_manager.user_loader
 def load_user(user_id: int):
-    # db_sess = db_session.create_session()
-    # return db_sess.query(User).filter(User.id == user_id).first()
-    pass
+    return db.connect("""SELECT id FROM users WHERE id=?""", params=(user_id, ), fetchall=False)
 
 
 def name_is_correct(name_s: str):
@@ -81,15 +80,6 @@ def password_is_correct(password: str):
     return True
 
 
-def update_user_auth_time():
-    if current_user.is_authenticated:
-        # db_sess = db_session.create_session()
-        # user = db_sess.query(User).filter(current_user.id == User.id).first()
-        # user.last_auth = datetime.datetime.now()
-        # db_sess.commit()
-        pass
-
-
 def allowed_type(filename, types):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in types
@@ -102,20 +92,16 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 
 @app.route("/", methods=["GET"])
 def index():
-    update_user_auth_time()
-    # db_sess = db_session.create_session()
-    # if current_user.is_authenticated:
-    #     # user = db_sess.query(User).filter(User.id == current_user.id).first()
-    #     return render_template("index.html", current_user=current_user, user=user)
+    if current_user.is_authenticated:
+        return render_template("index.html", current_user=current_user)
     return redirect("/login")
 
 
 @app.route("/signup", methods=["POST", "GET"])
 def signup():
-    update_user_auth_time()
     if request.method == "GET":
         if current_user.is_authenticated:
-            return redirect("/user/" + current_user.login)
+            return redirect("/")
         return render_template("signup.html")
     elif request.method == "POST":
         if not name_is_correct(request.form["name"]):
@@ -128,20 +114,17 @@ def signup():
             flash("Ошибка регистрации: электронная почта не удовлетворяет требованию", "danger")
             return redirect("/signup")
         if request.form["password"] == request.form["password_sec"] and password_is_correct(request.form["password"]):
-            # db_sess = db_session.create_session()
-            # existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
-            # if existing_user:
-            #     flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
-            #     return redirect("/signup")
-            # user = User()
-            # user.name = request.form["name"]
-            # user.surname = request.form["surname"]
-            # user.email = request.form["email"]
-            # user.hashed_password = generate_password_hash(request.form["password"])
-            # db_sess.add(user)
-            # db_sess.commit()
-            # login_user(user)
-            # user.last_auth = datetime.datetime.now()
+            existing_user = db.connect("""SELECT id FROM users WHERE email=?""", params=(request.form["email"], ),
+                                       fetchall=False)
+            if existing_user:
+                flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
+                return redirect("/signup")
+            new_id = len(db.connect("""SELECT id FROM users""", fetchall=True)) + 1
+            par = (new_id, request.form["email"], request.form["name"], request.form["surname"],
+                   generate_password_hash(request.form["password"]))
+            db.connect("INSERT INTO users VALUES(?, ?, ?, ?, ?)", params=par, fetchall=False)
+            user = User(*par)
+            login_user(user)
             flash("Регистрация прошла успешно!", "success")
             return redirect("/")
         elif password_is_correct(request.form["password"]):
@@ -154,57 +137,53 @@ def signup():
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
-    update_user_auth_time()
     if request.method == "GET":
         if current_user.is_authenticated:
             return redirect("/")
         return render_template("login.html")
     elif request.method == "POST":
-        pass
-        # db_sess = db_session.create_session()
-        # user = db_sess.query(User).filter(User.email == request.form["login"]).first()
-        # if user and check_password_hash(user.hashed_password, request.form["password"]):
-        #     login_user(user)
-        #     user.last_auth = datetime.datetime.now()
-        #     flash("Успешный вход", "success")
-        #     return redirect("/")
-        # elif not user:
-        #     flash("Ошибка входа: неверный логин", "danger")
-        #     return redirect("/login")
-        # elif not check_password_hash(user.hashed_password, request.form["password"]):
-        #     flash("Ошибка входа: неверный пароль", "danger")
-        #     return redirect("/login")
+        user = db.connect("""SELECT id FROM users WHERE email=?""",
+                          params=(request.form["email"], ), fetchall=False)
+        if user:
+            hashed_password = db.connect("""SELECT hashed_password FROM users WHERE id=?""",
+                                         params=(user, ), fetchall=False)
+            if check_password_hash(hashed_password, request.form["password"]):
+                login_user(user)
+                flash("Успешный вход", "success")
+                return redirect("/")
+            else:
+                flash("Ошибка входа: неверный пароль", "danger")
+                return redirect("/login")
+        else:
+            flash("Ошибка входа: неверный логин", "danger")
+            return redirect("/login")
+
 
 
 @app.route("/logout")
 @login_required
 def logout():
-    update_user_auth_time()
     logout_user()
     return redirect("/")
 
 
 @app.route("/add_site", methods=["POST", "GET"])
 def add_site_page():
-    update_user_auth_time()
     return render_template("add_site.html")
 
 
 @app.route("/site_repost", methods=["POST", "GET"])
 def site_repost_page():
-    update_user_auth_time()
     return render_template("site_repost.html")
 
 
 @app.route("/popular", methods=["POST", "GET"])
 def popular_page():
-    update_user_auth_time()
     return render_template("popular.html")
 
 
 @app.route("/admin", methods=["POST", "GET"])
 def admin_page():
-    update_user_auth_time()
     if current_user.is_authenticated:
         if current_user.is_admin:
             return render_template("popular.html")
@@ -216,7 +195,6 @@ def admin_page():
 
 @app.errorhandler(401)
 def e401(code):
-    update_user_auth_time()
     print(code)
     flash("[Ошибка 401] " + login_manager.login_message, "warning")
     return redirect("/")
@@ -224,7 +202,6 @@ def e401(code):
 
 @app.errorhandler(403)
 def e403(code):
-    update_user_auth_time()
     print(code)
     flash("[Ошибка 403] Cмотреть данную страницу/делать данное действие можно только администраторам", "warning")
     return redirect("/")
@@ -232,15 +209,13 @@ def e403(code):
 
 @app.errorhandler(404)
 def e404(code):
-    update_user_auth_time()
     print(code)
-    return render_template("error.html", current_user=current_user, link=request.args.get("from"),
+    return render_template("error.html", current_user=current_user,
                            code=404, err="Мы не можем показать эту страницу: её не существует")
 
 
 @app.errorhandler(500)
 def e500(code):
-    update_user_auth_time()
     print(code)
     return render_template("error.html", current_user=current_user, code=500,
                            err="Извините за неудобство. Сейчас мы активно работаем над причиной проблемы и"
@@ -248,6 +223,6 @@ def e500(code):
 
 
 if __name__ == "__main__":
-    db = db_api.DB("../db", "detector2.db")
+    db = db_api.DB("./db", "detector.db")
     db.global_init()
     app.run(host="0.0.0.0", port=8080, debug=True)
