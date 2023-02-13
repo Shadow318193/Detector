@@ -32,7 +32,7 @@ def create_session() -> Session:
     global __factory
 
 
-    db_file = 'db/detector.db'
+    db_file = 'db/detector2.db'
 
 
     conn_str = 'sqlite:///' + db_file.strip() + '?check_same_thread=False'
