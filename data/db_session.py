@@ -30,4 +30,18 @@ def global_init(db_file):
 
 def create_session() -> Session:
     global __factory
+
+
+    db_file = 'db/detector.db'
+
+
+    conn_str = 'sqlite:///' + db_file.strip() + '?check_same_thread=False'
+
+    engine = sa.create_engine(conn_str, echo=False)
+    __factory = orm.sessionmaker(bind=engine)
+
+    from . import __all_models
+
+    SqlAlchemyBase.metadata.create_all(engine)
+
     return __factory()
