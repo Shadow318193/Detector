@@ -118,7 +118,7 @@ class DB:
                 continue
             name_site, url_site = d[0]
 
-            requests_lst = [name_site, url_site]
+            requests_lst = [name_site, url_site, {}]
             requests_types = self.connect(
                 """SELECT id, type FROM requests_types;""",
                 fetchall=True)
@@ -128,7 +128,7 @@ class DB:
                                  fetchall=True, params=(site[0], requests_t[0],))
                 if not o:
                     continue
-                requests_lst.append({requests_t[1]: o[0][0]})
+                requests_lst[-1][requests_t[1]] = o[0][0]
             data[site[0]] = requests_lst
         return data
 
@@ -225,12 +225,19 @@ class DB:
             fetchall=True)
         return list(el[0] for el in site_ids)
 
+    def get_requests_types(self):
+        requests_types = self.connect(
+            """SELECT type FROM requests_types;""",
+            fetchall=True)
+        return [x[0] for x in requests_types]
+
 
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
     # db.global_init()
     x = db.requests_by_user_id(1)
     print(x)
+    print(db.get_requests_types())
     # x = db.requests_by_user_id(1)
     # x = db.rejected_by_user_id(1)
     # x = db.add_syte(("https://sqliteonline.com/", "sqlite_online"), 1)
