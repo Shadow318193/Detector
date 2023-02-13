@@ -63,19 +63,19 @@ class DB:
             FOREIGN KEY(site_id) REFERENCES sites (id), 
             FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
         );""")
-        lst = ["DE request", "NL request", "SG request", "RU request",
-               "USA request", "UK request"]
-        for i in lst:
-            self.connect("INSERT INTO requests_types (type) VALUES(?)",
-                         params=(i,))
-        lst = [("https://proton.mskobr.ru/", "Образовательный центр «Протон»"),
-               ("https://www.msu.ru/",
-                "Московский государственный университет имени М.В.Ломоносова"),
-               ("https://mipt.ru/", "Московский физико-технический институт")]
-        for i in lst:
-            site_id = self.connect("""INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
-             RETURNING id;""",
-                                   fetchall=True, params=i)
+        # lst = ["DE request", "NL request", "SG request", "RU request",
+        #        "USA request", "UK request"]
+        # for i in lst:
+        #     self.connect("INSERT INTO requests_types (type) VALUES(?)",
+        #                  params=(i,))
+        # lst = [("https://proton.mskobr.ru/", "Образовательный центр «Протон»"),
+        #        ("https://www.msu.ru/",
+        #         "Московский государственный университет имени М.В.Ломоносова"),
+        #        ("https://mipt.ru/", "Московский физико-технический институт")]
+        # for i in lst:
+        #     site_id = self.connect("""INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
+        #      RETURNING id;""",
+        #                            fetchall=True, params=i)
 
     def add_request(self, data):
         # id сайта
@@ -119,16 +119,16 @@ class DB:
             name_site, url_site = d[0]
 
             requests_lst = [name_site, url_site]
-            requests_types = [x[0] for x in self.connect(
-                """SELECT id FROM requests_types;""",
-                fetchall=True)]
+            requests_types = self.connect(
+                """SELECT id, type FROM requests_types;""",
+                fetchall=True)
             for requests_t in requests_types:
                 o = self.connect("""SELECT status FROM requests WHERE site_id=? AND
                                  request_type_id=? ORDER BY time DESC LIMIT 1;""",
-                                 fetchall=True, params=(site[0], requests_t,))
+                                 fetchall=True, params=(site[0], requests_t[0],))
                 if not o:
                     continue
-                requests_lst.append(o[0][0])
+                requests_lst.append({requests_t[1]: o[0][0]})
             data[site[0]] = requests_lst
         return data
 
@@ -229,9 +229,10 @@ class DB:
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
     # db.global_init()
+    x = db.requests_by_user_id(1)
+    print(x)
     # x = db.requests_by_user_id(1)
     # x = db.rejected_by_user_id(1)
     # x = db.add_syte(("https://sqliteonline.com/", "sqlite_online"), 1)
     # print(db.set_moder((5, 1)))
     # print(db.get_statistic(2))
-    print(db.sites_list())

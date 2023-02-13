@@ -10,6 +10,8 @@ from data import db_session
 
 import datetime
 
+import os
+
 AVATAR_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_PIC_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_VID_TYPES = ["webm", "mp4"]
@@ -62,6 +64,26 @@ def name_is_correct(name_s: str):
     return True
 
 
+def password_is_correct(password: str):
+    if password.islower() or password.isupper() or len(password) < 8:
+        return False
+    for i in password.lower():
+        if i not in "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклм" \
+                    "нопрстуфхцчшщъыьэюя0123456789!@$#_":
+            return False
+    digits = ""
+    special = ""
+    for i in "0123456789":
+        if i in password:
+            digits += i
+    for i in "!@$#":
+        if i in password:
+            special += i
+    if not special or not digits:
+        return False
+    return True
+
+
 def allowed_type(filename, types):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in types
@@ -74,11 +96,30 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 
 @app.route("/", methods=["GET"])
 def index():
+    name = ['url']
+
+    total = {'1': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'eeee'},
+             '2': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'neeee'},
+             '3': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'Бааааан'},
+             '4': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'Бааааан'}}
+    slovar_total = ['1', '2', '3', '4']
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
-        return render_template("index.html", current_user=current_user,
-                               user=user)
+        return render_template("index (1).html", current_user=current_user, user=user, total=total, name=name,
+                               slovar_total=slovar_total, number=len(name), number2 = len(slovar_total))
     return redirect("/login")
 
 
@@ -104,7 +145,7 @@ def signup():
                 "danger")
             return redirect("/signup")
         if request.form["password"] == request.form[
-            "password_sec"] and request.form["password"].split():
+            "password_sec"] and password_is_correct(request.form["password"]):
             db_sess = db_session.create_session()
             c = db_sess.query(User).count()
             if c:
@@ -129,7 +170,7 @@ def signup():
             login_user(user)
             flash("Регистрация прошла успешно!", "success")
             return redirect("/")
-        elif request.form["password"].split():
+        elif password_is_correct(request.form["password"]):
             flash("Ошибка регистрации: пароль не повторён", "danger")
             return redirect("/signup")
         else:
