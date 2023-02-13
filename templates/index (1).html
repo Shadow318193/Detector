@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block main_content %}
+    <div class="row pb-3">
+        <div class="col pb-3">
+                <div class="card-body">
+                    {% if user.is_admin %}
+                        <h5 class="card-text text-center" style="color: #ff0000;">Администратор</h5>
+                    {% endif %}
+                </div>
+            {% if current_user.is_admin %}
+            {% if user.is_banned %}
+                <form class="pb-2" method="post">
+                    <button type="submit" class="btn btn-info" style="width: 18rem;" id="unban_user_button" name="unban_user_button">Разбанить пользователя</button>
+                </form>
+            {% else %}
+                <form class="pb-2" method="post">
+                    <button type="submit" class="btn btn-info" style="width: 18rem;" id="ban_user_button" name="ban_user_button">Забанить пользователя</button>
+                    <input class="form-control mt-2" style="width: 18rem;" type="text" id="reason_text" name="reason_text" placeholder="Причина">
+                </form>
+            {% endif %}
+            {% endif %}
+        </div>
+
+            <p>Сайт: <i>{{ user_time }}</i></p>
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    {% for i in range(number) %}
+                    <th scope="col">{{ name[i] }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in range(number2) %}
+                <tr>
+                    <th scope="row">{{slovar_total[i]}}</th>
+                    {% for j in range(number - 1) %}
+                    <td>{{total[slovar_total[i]][name[j + 1]]}}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+{% endblock %}

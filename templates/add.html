@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block header_block %}
+    <header class="p-3 text-bg-dark">
+        <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+          <img src="/static/media/favicon.png" width="32" height="32" class="bi me-2">
+        </a>
+
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+            {% if current_user.is_authenticated %}
+                <li><a href="/" class="nav-link px-2 text-white">Домашняя</a></li>
+                <li><a href="/add_a_website" class="nav-link px-2 text-white">Добавить сайт</a></li>
+                <li><a href="/popular" class="nav-link px-2 text-white">Популярное</a></li>
+            {% endif %}
+        </ul>
+       </div>
+    </div>
+    </header>
+<main class="container mt-5 p-5">
+    <form method="post">
+        <div class="form-group mb-5">
+            <label for="login">Url:</label>
+            <input class="form-control" id="login" name="login" placeholder="Url">
+        </div>
+        <div class="form-group mb-5">
+            <label for="login">Название:</label>
+            <input class="form-control" id="login" name="login" placeholder="Название">
+
+        </div>
+        <div class="text-center mb-5">
+            <a href="/signup" class="btn btn-info">Отправить</a>
+        </div>
+
+    </form>
+</main>
+
+{% endblock %}
