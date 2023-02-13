@@ -10,7 +10,7 @@ from data import db_session
 
 import datetime
 
-import os
+import request_schedule_process
 
 AVATAR_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_PIC_TYPES = ["png", "jpg", "jpeg", "gif"]
