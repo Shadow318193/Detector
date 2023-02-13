@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template, redirect, abort, flash
-from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_login import LoginManager, login_user, logout_user, login_required, \
+    current_user
 
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -41,11 +42,11 @@ def make_readble_time(t: datetime.datetime):
 accept_avatars = ",".join([make_accept_for_html(x) for x in AVATAR_TYPES])
 accept_media = ",".join([make_accept_for_html(x) for x in MEDIA_TYPES])
 
-
 app = Flask(__name__)
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_message = "Cмотреть данную страницу/делать данное действие можно " \
+login_manager.login_message = "Cмотреть данную страницу/делать данное " \
+                              "действие можно " \
                               "только авторизованным пользователям"
 
 
@@ -67,7 +68,8 @@ def password_is_correct(password: str):
     if password.islower() or password.isupper() or len(password) < 8:
         return False
     for i in password.lower():
-        if i not in "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклмнопрстуфхцчшщъыьэюя0123456789!@$#_":
+        if i not in "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклм" \
+                    "нопрстуфхцчшщъыьэюя0123456789!@$#_":
             return False
     digits = ""
     special = ""
@@ -84,7 +86,7 @@ def password_is_correct(password: str):
 
 def allowed_type(filename, types):
     return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in types
+        filename.rsplit('.', 1)[1].lower() in types
 
 
 app.config['SECRET_KEY'] = 'secret_key'
@@ -97,7 +99,8 @@ def index():
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
-        return render_template("index.html", current_user=current_user, user=user)
+        return render_template("index.html", current_user=current_user,
+                               user=user)
     return redirect("/login")
 
 
@@ -109,27 +112,36 @@ def signup():
         return render_template("signup.html")
     elif request.method == "POST":
         if not name_is_correct(request.form["name"]):
-            flash("Ошибка регистрации: имя не удовлетворяет требованию", "danger")
+            flash("Ошибка регистрации: имя не удовлетворяет требованию",
+                  "danger")
             return redirect("/signup")
         elif not name_is_correct(request.form["surname"]):
-            flash("Ошибка регистрации: фамилия не удовлетворяет требованию", "danger")
+            flash("Ошибка регистрации: фамилия не удовлетворяет требованию",
+                  "danger")
             return redirect("/signup")
         elif not request.form["email"]:
-            flash("Ошибка регистрации: электронная почта не удовлетворяет требованию", "danger")
+            flash(
+                "Ошибка регистрации: электронная почта "
+                "не удовлетворяет требованию",
+                "danger")
             return redirect("/signup")
-        if request.form["password"] == request.form["password_sec"] and password_is_correct(request.form["password"]):
+        if request.form["password"] == request.form[
+            "password_sec"] and password_is_correct(request.form["password"]):
             db_sess = db_session.create_session()
             c = db_sess.query(User).count()
             if c:
-                existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
+                existing_user = db_sess.query(User).filter(
+                    User.email == request.form["email"]).first()
                 if existing_user:
-                    flash("Ошибка регистрации: кто-то уже есть с такой почтой", "danger")
+                    flash("Ошибка регистрации: кто-то уже есть с такой почтой",
+                          "danger")
                     return redirect("/signup")
             user = User()
             user.name = request.form["name"]
             user.surname = request.form["surname"]
             user.email = request.form["email"]
-            user.hashed_password = generate_password_hash(request.form["password"])
+            user.hashed_password = generate_password_hash(
+                request.form["password"])
             if not c:
                 user.is_admin = True
             else:
@@ -143,7 +155,8 @@ def signup():
             flash("Ошибка регистрации: пароль не повторён", "danger")
             return redirect("/signup")
         else:
-            flash("Ошибка регистрации: пароль не удовлетворяет требованию", "danger")
+            flash("Ошибка регистрации: пароль не удовлетворяет требованию",
+                  "danger")
             return redirect("/signup")
 
 
@@ -155,8 +168,10 @@ def login():
         return render_template("login.html")
     elif request.method == "POST":
         db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.email == request.form["login"]).first()
-        if user and check_password_hash(user.hashed_password, request.form["password"]):
+        user = db_sess.query(User).filter(
+            User.email == request.form["login"]).first()
+        if user and check_password_hash(user.hashed_password,
+                                        request.form["password"]):
             login_user(user)
             user.last_auth = datetime.datetime.now()
             flash("Успешный вход", "success")
@@ -164,7 +179,8 @@ def login():
         elif not user:
             flash("Ошибка входа: неверный логин", "danger")
             return redirect("/login")
-        elif not check_password_hash(user.hashed_password, request.form["password"]):
+        elif not check_password_hash(user.hashed_password,
+                                     request.form["password"]):
             flash("Ошибка входа: неверный пароль", "danger")
             return redirect("/login")
 
@@ -212,7 +228,9 @@ def e401(code):
 @app.errorhandler(403)
 def e403(code):
     print(code)
-    flash("[Ошибка 403] Cмотреть данную страницу/делать данное действие можно только администраторам", "warning")
+    flash(
+        "[Ошибка 403] Cмотреть данную страницу/делать данное действие "
+        "можно только администраторам", "warning")
     return redirect("/")
 
 
@@ -220,15 +238,18 @@ def e403(code):
 def e404(code):
     print(code)
     return render_template("error.html", current_user=current_user,
-                           code=404, err="Мы не можем показать эту страницу: её не существует")
+                           code=404,
+                           err="Мы не можем показать эту страницу: "
+                               "её не существует")
 
 
 @app.errorhandler(500)
 def e500(code):
     print(code)
     return render_template("error.html", current_user=current_user, code=500,
-                           err="Извините за неудобство. Сейчас мы активно работаем над причиной проблемы и"
-                           " исправляем её")
+                           err="Извините за неудобство. "
+                               "Сейчас мы активно работаем над причиной "
+                               "проблемы и исправляем её")
 
 
 if __name__ == "__main__":

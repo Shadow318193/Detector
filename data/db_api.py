@@ -13,14 +13,15 @@ class DB:
             if fetchall:
                 try:
                     return conn.execute(text_for_execute, params).fetchall()
-                except:
+                except Exception:
                     print(text_for_execute)
             else:
                 conn.execute(text_for_execute, params)
                 conn.commit()
 
     def global_init(self):
-        print("Подключение к БД по адресу: " + '"' + self.directory + "/" + self.name + '"')
+        print(
+            "Подключение к БД по адресу: " + '"' + self.directory + "/" + self.name + '"')
         with open(self.directory + "/" + self.name, "a+"):
             pass
         self.connect("""
@@ -62,11 +63,14 @@ class DB:
             FOREIGN KEY(site_id) REFERENCES sites (id), 
             FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
         );""")
-        lst = ["DE request", "NL request", "SG request", "RU request", "USA request", "UK request"]
+        lst = ["DE request", "NL request", "SG request", "RU request",
+               "USA request", "UK request"]
         for i in lst:
-            self.connect("INSERT INTO requests_types (type) VALUES(?)", params=(i, ))
+            self.connect("INSERT INTO requests_types (type) VALUES(?)",
+                         params=(i,))
         lst = [("https://proton.mskobr.ru/", "Образовательный центр «Протон»"),
-               ("https://www.msu.ru/", "Московский государственный университет имени М.В.Ломоносова"),
+               ("https://www.msu.ru/",
+                "Московский государственный университет имени М.В.Ломоносова"),
                ("https://mipt.ru/", "Московский физико-технический институт")]
         for i in lst:
             site_id = self.connect("""INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
@@ -100,26 +104,28 @@ class DB:
             req_type_id[0][0]))
 
     def requests_by_user_id(self, user_id: int):
-        site_ids = self.connect("""SELECT site_id FROM users_sites WHERE user_id=?;""",
-                                params=(user_id, ),
-                                fetchall=True)
+        site_ids = self.connect(
+            """SELECT site_id FROM users_sites WHERE user_id=?;""",
+            params=(user_id,),
+            fetchall=True)
         data = dict()
         for site in site_ids:
             d = self.connect("""SELECT name, url FROM sites WHERE id=? AND
                                 is_moderated=1;""",
-                             params=(site[0], ),
+                             params=(site[0],),
                              fetchall=True)
             if not d:
                 continue
             name_site, url_site = d[0]
 
             requests_lst = [name_site, url_site]
-            requests_types = [x[0] for x in self.connect("""SELECT id FROM requests_types;""",
-                                                         fetchall=True)]
+            requests_types = [x[0] for x in self.connect(
+                """SELECT id FROM requests_types;""",
+                fetchall=True)]
             for requests_t in requests_types:
                 o = self.connect("""SELECT status FROM requests WHERE site_id=? AND
                                  request_type_id=? ORDER BY time DESC LIMIT 1;""",
-                                 fetchall=True, params=(site[0], requests_t, ))
+                                 fetchall=True, params=(site[0], requests_t,))
                 if not o:
                     continue
                 requests_lst.append(o[0][0])
@@ -127,9 +133,10 @@ class DB:
         return data
 
     def non_moderated_by_user_id(self, user_id: int):
-        site_ids = self.connect("""SELECT site_id FROM users_sites WHERE user_id=?;""",
-                                params=(user_id,),
-                                fetchall=True)
+        site_ids = self.connect(
+            """SELECT site_id FROM users_sites WHERE user_id=?;""",
+            params=(user_id,),
+            fetchall=True)
         data = dict()
         for site in site_ids:
             d = self.connect("""SELECT name, url FROM sites WHERE id=? AND
@@ -144,9 +151,10 @@ class DB:
         return data
 
     def rejected_by_user_id(self, user_id: int):
-        site_ids = self.connect("""SELECT site_id FROM users_sites WHERE user_id=?;""",
-                                params=(user_id,),
-                                fetchall=True)
+        site_ids = self.connect(
+            """SELECT site_id FROM users_sites WHERE user_id=?;""",
+            params=(user_id,),
+            fetchall=True)
         data = dict()
         for site in site_ids:
             d = self.connect("""SELECT name, url FROM sites WHERE id=? AND
@@ -161,8 +169,9 @@ class DB:
         return data
 
     def non_moderated_list(self):
-        d = self.connect("""SELECT id, name, url FROM sites WHERE is_moderated=0;""",
-                         fetchall=True)
+        d = self.connect(
+            """SELECT id, name, url FROM sites WHERE is_moderated=0;""",
+            fetchall=True)
         data = dict()
         for site in d:
             data[site[0]] = [site[1], site[2]]
@@ -179,11 +188,12 @@ class DB:
                                     """, fetchall=True, params=url_name)
         site_id = site_id[0][0]
         self.connect("""INSERT INTO users_sites (user_id, site_id)
-         VALUES(?, ?);""", params=(user_id, site_id, ))
+         VALUES(?, ?);""", params=(user_id, site_id,))
 
     def set_moder(self, id_state: tuple):
-        self.connect("""UPDATE sites SET is_moderated=? WHERE id=? RETURNING id;""",
-                     params=id_state[::-1], fetchall=True)
+        self.connect(
+            """UPDATE sites SET is_moderated=? WHERE id=? RETURNING id;""",
+            params=id_state[::-1], fetchall=True)
         if not id:
             return -1
         else:
@@ -192,25 +202,29 @@ class DB:
     def get_statistic(self, site_id):
         time_s = self.connect("""SELECT time FROM requests WHERE site_id=?
          ORDER BY time LIMIT 1;""",
-                              params=(site_id, ), fetchall=True)
+                              params=(site_id,), fetchall=True)
         if not time_s:
             time_s = None
         else:
             time_s = time_s[0][0]
-        requests_count = self.connect("""SELECT COUNT(*) FROM requests WHERE site_id=?;""",
-                                      params=(site_id, ), fetchall=True)[0][0]
+        requests_count = \
+        self.connect("""SELECT COUNT(*) FROM requests WHERE site_id=?;""",
+                     params=(site_id,), fetchall=True)[0][0]
         bad_requests_count = self.connect("""SELECT COUNT(*) FROM
          requests WHERE site_id=? AND status <> 200 AND status <> 301;""",
-                                          params=(site_id, ), fetchall=True)[0][0]
+                                          params=(site_id,), fetchall=True)[0][
+            0]
         data = {"time start": time_s,
                 "requests count": requests_count,
                 "bad requests count": bad_requests_count}
         return data
 
     def sites_list(self):
-        site_ids = self.connect("""SELECT url FROM sites WHERE is_moderated=1;""",
-                                fetchall=True)
+        site_ids = self.connect(
+            """SELECT url FROM sites WHERE is_moderated=1;""",
+            fetchall=True)
         return list(el[0] for el in site_ids)
+
 
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
