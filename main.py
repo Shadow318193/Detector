@@ -253,7 +253,7 @@ def e500(code):
 
 
 if __name__ == "__main__":
-    db = db_api.DB("./db", "detector.db")
+    db = db_api.DB("./db", "detector2.db")
     db.global_init()
-    db_session.global_init("db/detector.db")
+    db_session.global_init("db/detector2.db")
     app.run(host="0.0.0.0", port=8080, debug=True)
