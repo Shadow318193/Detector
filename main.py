@@ -62,26 +62,6 @@ def name_is_correct(name_s: str):
     return True
 
 
-def password_is_correct(password: str):
-    if password.islower() or password.isupper() or len(password) < 8:
-        return False
-    for i in password.lower():
-        if i not in "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклм" \
-                    "нопрстуфхцчшщъыьэюя0123456789!@$#_":
-            return False
-    digits = ""
-    special = ""
-    for i in "0123456789":
-        if i in password:
-            digits += i
-    for i in "!@$#":
-        if i in password:
-            special += i
-    if not special or not digits:
-        return False
-    return True
-
-
 def allowed_type(filename, types):
     return '.' in filename and \
         filename.rsplit('.', 1)[1].lower() in types
@@ -124,7 +104,7 @@ def signup():
                 "danger")
             return redirect("/signup")
         if request.form["password"] == request.form[
-            "password_sec"] and password_is_correct(request.form["password"]):
+            "password_sec"] and request.form["password"].split():
             db_sess = db_session.create_session()
             c = db_sess.query(User).count()
             if c:
@@ -149,7 +129,7 @@ def signup():
             login_user(user)
             flash("Регистрация прошла успешно!", "success")
             return redirect("/")
-        elif password_is_correct(request.form["password"]):
+        elif request.form["password"].split():
             flash("Ошибка регистрации: пароль не повторён", "danger")
             return redirect("/signup")
         else:
