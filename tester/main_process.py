@@ -3,6 +3,7 @@ from data.db_api import DB
 
 db = DB("../db", "detector2.db")
 
+
 class Parser:
     parsers = [
         AvailableTester()

@@ -9,7 +9,7 @@ from data.users import User
 from data import db_session
 
 import datetime
-
+import logging
 import os
 
 AVATAR_TYPES = ["png", "jpg", "jpeg", "gif"]
@@ -17,6 +17,12 @@ MEDIA_PIC_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_VID_TYPES = ["webm", "mp4"]
 MEDIA_AUD_TYPES = ["mp3", "wav"]
 MEDIA_TYPES = MEDIA_VID_TYPES + MEDIA_PIC_TYPES + MEDIA_AUD_TYPES
+
+logging.basicConfig(format=u'%(filename)+13s [ LINE:%(lineno)-4s]'
+                           u' %(levelname)-8s [%(asctime)s] %(message)s',
+                    level=logging.DEBUG,
+                    filename='website-logging.log',
+                    filemode='w')
 
 
 def make_accept_for_html(mime: str):
@@ -104,8 +110,10 @@ def popular_page():
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
-        return render_template("popular.html", current_user=current_user, user=user, total=total, name=name,
-                               slovar_total=slovar_total, number=len(name), number2 = len(slovar_total))
+        return render_template("popular.html", current_user=current_user,
+                               user=user, total=total, name=name,
+                               slovar_total=slovar_total, number=len(name),
+                               number2=len(slovar_total))
     return redirect("/login")
 
 
@@ -132,8 +140,10 @@ def index():
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
-        return render_template("index (1).html", current_user=current_user, user=user, total=total, name=name,
-                               slovar_total=slovar_total, number=len(name), number2=len(slovar_total))
+        return render_template("index (1).html", current_user=current_user,
+                               user=user, total=total, name=name,
+                               slovar_total=slovar_total, number=len(name),
+                               number2=len(slovar_total))
     return redirect("/login")
 
 
@@ -248,9 +258,6 @@ def add_site_page():
 @app.route("/site_repost", methods=["POST", "GET"])
 def site_repost_page():
     return render_template("site_repost.html")
-
-
-
 
 
 @app.route("/admin", methods=["POST", "GET"])
