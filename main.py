@@ -94,8 +94,8 @@ app.config['UPLOAD_FOLDER'] = 'static/media/from_users'
 app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 
 
-@app.route("/", methods=["GET"])
-def index():
+@app.route("/popular", methods=["GET"])
+def popular_page():
     name = ['url'] + db.get_requests_types()
 
     total = db.requests_by_user_id(current_user.id)
@@ -104,9 +104,52 @@ def index():
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
-        return render_template("index (1).html", current_user=current_user, user=user, total=total, name=name,
+        return render_template("popular.html", current_user=current_user, user=user, total=total, name=name,
                                slovar_total=slovar_total, number=len(name), number2 = len(slovar_total))
     return redirect("/login")
+
+
+@app.route("/", methods=["GET"])
+def index():
+    name = ['сайт', 'RU', 'US', 'PO'] + ['Статус модерации']
+    total = {'1': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'eeee'},
+             '2': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'neeee'},
+             '3': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'Бааааан'},
+             '4': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'Бааааан'}}
+    slovar_total = ['1', '2', '3', '4']
+    if current_user.is_authenticated:
+        db_sess = db_session.create_session()
+        user = db_sess.query(User).filter(User.id == current_user.id).first()
+        return render_template("index (1).html", current_user=current_user, user=user, total=total, name=name,
+                               slovar_total=slovar_total, number=len(name), number2=len(slovar_total))
+    return redirect("/login")
+
+
+@app.route("/add_a_website", methods=["GET"])
+def add_a_website():
+    return render_template("add.html")
+
+
+@app.route("/rating", methods=["GET"])
+def rating():
+    return render_template("rating.html")
+
+
+@app.route("/report", methods=["GET"])
+def report():
+    return render_template("report.html")
 
 
 @app.route("/signup", methods=["POST", "GET"])
@@ -207,9 +250,7 @@ def site_repost_page():
     return render_template("site_repost.html")
 
 
-@app.route("/popular", methods=["POST", "GET"])
-def popular_page():
-    return render_template("popular.html")
+
 
 
 @app.route("/admin", methods=["POST", "GET"])
