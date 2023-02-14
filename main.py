@@ -88,10 +88,10 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 
 @app.route("/popular", methods=["GET"])
 def popular_page():
-    name = ['url'] + db.get_requests_types()
+    name = ['название'] + db.get_requests_types()
 
-    total = db.requests_by_user_id(current_user.id)
-    total = {x[0]: x[-1] for x in total.values()}
+    total = db.get_popular()
+    total = {(x[0], x[1]): x[-1] for x in total.values()}
     slovar_total = list(total.keys())
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
@@ -105,24 +105,11 @@ def popular_page():
 
 @app.route("/", methods=["GET"])
 def index():
-    name = ['сайт', 'RU', 'US', 'PO'] + ['Статус модерации']
-    total = {'1': {'RU request': '100',
-                   'US': '0',
-                   'PO': '4',
-                   'Статус модерации': 'eeee'},
-             '2': {'RU request': '100',
-                   'US': '0',
-                   'PO': '4',
-                   'Статус модерации': 'neeee'},
-             '3': {'RU request': '100',
-                   'US': '0',
-                   'PO': '4',
-                   'Статус модерации': 'Бааааан'},
-             '4': {'RU request': '100',
-                   'US': '0',
-                   'PO': '4',
-                   'Статус модерации': 'Бааааан'}}
-    slovar_total = ['1', '2', '3', '4']
+    name = ['название'] + db.get_requests_types()
+
+    total = db.requests_by_user_id(current_user.id)
+    total = {(x[0], x[1]): x[-1] for x in total.values()}
+    slovar_total = list(total.keys())
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
