@@ -2,35 +2,43 @@
 {% block header_block %}
     <header class="p-3 text-bg-dark">
         <div class="container">
-        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
-        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
-          <img src="/static/media/favicon.png" width="86" height="32" class="bi me-2">
-        </a>
+            <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+                <a href="/"
+                   class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+                    <img src="/static/media/favicon.png" width="86" height="32"
+                         class="bi me-2">
+                </a>
 
-        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
-            {% if current_user.is_authenticated %}
-                <li><a href="/" class="nav-link px-2 text-white">Домашняя</a></li>
-                <li><a href="/add_a_website" class="nav-link px-2 text-white">Добавить сайт</a></li>
-                <li><a href="/popular" class="nav-link px-2 text-white">Популярное</a></li>
-            {% endif %}
-        </ul>
+                <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                    {% if current_user.is_authenticated %}
+                        <li><a href="/" class="nav-link px-2 text-white">Домашняя</a>
+                        </li>
+                        <li><a href="/add_a_website"
+                               class="nav-link px-2 text-white">Добавить
+                            сайт</a></li>
+                        <li><a href="/popular"
+                               class="nav-link px-2 text-white">Популярное</a>
+                        </li>
+                    {% endif %}
+                </ul>
 
-            <div class="text-end">
-                {% if current_user.is_authenticated %}
-                    <a href="/logout" class="btn btn-outline-light me-2">Выйти</a>
+                <div class="text-end">
+                    {% if current_user.is_authenticated %}
+                        <a href="/logout" class="btn btn-outline-light me-2">Выйти</a>
 
-                {% else %}
-                    <a href="/login" class="btn btn-outline-light me-2">Войти</a>
-                    <a href="/signup" class="btn btn-info">Зарегистрироваться</a>
-                {% endif %}
+                    {% else %}
+                        <a href="/login" class="btn btn-outline-light me-2">Войти</a>
+                        <a href="/signup" class="btn btn-info">Зарегистрироваться</a>
+                    {% endif %}
+                </div>
+
+
             </div>
-
-
-      </div>
-    </div>
+        </div>
     </header>
     {% for cat, msg in get_flashed_messages(True) %}
-    <div class="alert alert-{{ cat }} text-center" style="white-space: pre-wrap;">{{ msg }}</div>
+        <div class="alert alert-{{ cat }} text-center"
+             style="white-space: pre-wrap;">{{ msg }}</div>
     {% endfor %}
 
 {% endblock %}

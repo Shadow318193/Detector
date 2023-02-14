@@ -6,7 +6,8 @@
                 <div class="card-body">
                     <h5 class="card-title text-center">{{ current_user.surname }} {{ current_user.name }}</h5>
                     {% if current_user.is_admin %}
-                        <h5 class="card-text text-center" style="color: #ff0000;">Администратор</h5>
+                        <h5 class="card-text text-center"
+                            style="color: #ff0000;">Администратор</h5>
                     {% endif %}
                 </div>
             </div>
