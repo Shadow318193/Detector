@@ -140,10 +140,9 @@ def add_a_website():
     elif request.method == "POST":
         if request.form.get("url") and request.form.get("name"):
             db.add_syte((request.form["url"], request.form["name"]), current_user.id)
-            flash("Дело сделано", "success")
+            flash("Сайт добавлен", "success")
             return redirect("/")
         else:
-            flash("Слышь, говори нормально, а то получишь по щам", "danger")
             return redirect("/add_a_website")
 
 
