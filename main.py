@@ -232,15 +232,11 @@ def site_repost_page():
     return render_template("site_repost.html")
 
 
-@app.route("/admin", methods=["POST", "GET"])
+@app.route("/admin", methods=["GET"])
 def admin_page():
-    if current_user.is_authenticated:
-        if current_user.is_admin:
-            return render_template("admin.html")
-        else:
-            abort(403)
-    else:
-        abort(401)
+    total = db.non_moderated_list()
+    name = list(total.keys())
+    return render_template("admin.html", number=len(name), total=total, name=name)
 
 
 @app.errorhandler(401)

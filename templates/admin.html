@@ -1,4 +1,32 @@
 {% extends 'base.html' %}
 {% block main_content %}
-    <h1>Меню администратора</h1>
+    <div class="row pb-3">
+        <p>Популярные сайты:</p>
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+            <tr>
+                 <th scope="col">Ссылка на сайт</th>
+                 <th scope="col">Да или нет</th>
+                 <th scope="col">Поменять название</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in range(number) %}
+                <tr>
+                    <th>
+                        <a href={{ total[name[i]][1] }} scope="row">{{ total[name[i]][1] }}</a>
+                    </th>
+                    <th>
+                        <button type="submit" class="btn btn-info btn-lg">Да</button>
+                        <button type="submit" class="btn btn-info btn-lg">Нет</button>
+                    </th>
+                    <th>
+                    <input type="text" class="form-control" id="lname" name="lname" value={{ total[name[i]][0] }}>
+                    </th>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}

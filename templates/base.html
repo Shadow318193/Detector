@@ -19,7 +19,14 @@
                         <li><a href="/popular"
                                class="nav-link px-2 text-white">Популярное</a>
                         </li>
+                        {% if current_user.is_admin %}
+                            <li><a href="/admin"
+                               class="nav-link px-2 text-white">Админ</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
+
+
                 </ul>
 
                 <div class="text-end">
