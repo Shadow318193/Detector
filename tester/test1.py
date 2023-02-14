@@ -12,11 +12,11 @@ class AvailableTester:
 
     def get_data(self, urls: list) -> list:
         data = []
-        signature = requests.get("https://2ip.ru/site-availability/").text
-        signature = signature.split("var services = [")[1].split("{")[1][:-6].\
-        replace("\n", "").replace("\t", " ").replace("     ", "").\
-        split("\'")[1].split("\'")[0].split("/?")[1]
         for url in urls:
+            signature = requests.get("https://2ip.ru/site-availability/").text
+            signature = signature.split("var services = [")[1].split("{")[1][:-6]. \
+                replace("\n", "").replace("\t", " ").replace("     ", ""). \
+                split("\'")[1].split("\'")[0].split("/?")[1]
             for country, link in self.urls_to_parse.items():
                 html = requests.get(link + "/?" + signature + url, headers={
                     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
