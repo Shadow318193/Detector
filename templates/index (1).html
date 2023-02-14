@@ -14,7 +14,7 @@
                 <tbody>
                 {% for i in range(number2) %}
                 <tr>
-                    <th scope="row">{{slovar_total[i]}}</th>
+                    <th><a href={{slovar_total[i][1]}} scope="row">{{slovar_total[i][0]}}</a></th>
                     {% for j in range(number - 1) %}
                     <td>{{total[slovar_total[i]][name[j + 1]]}}</td>
                     {% endfor %}
