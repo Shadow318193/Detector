@@ -18,11 +18,11 @@ MEDIA_VID_TYPES = ["webm", "mp4"]
 MEDIA_AUD_TYPES = ["mp3", "wav"]
 MEDIA_TYPES = MEDIA_VID_TYPES + MEDIA_PIC_TYPES + MEDIA_AUD_TYPES
 
-logging.basicConfig(format=u'%(filename)+13s [ LINE:%(lineno)-4s]'
-                           u' %(levelname)-8s [%(asctime)s] %(message)s',
-                    level=logging.DEBUG,
-                    filename='website-logging.log',
-                    filemode='w')
+# logging.basicConfig(format=u'%(filename)+13s [ LINE:%(lineno)-4s]'
+                           # u' %(levelname)-8s [%(asctime)s] %(message)s',
+                    # level=logging.DEBUG,
+                    # filename='website-logging.log',
+                    # filemode='w')
 
 
 def make_accept_for_html(mime: str):
@@ -71,23 +71,9 @@ def name_is_correct(name_s: str):
 
 
 def password_is_correct(password: str):
-    if password.islower() or password.isupper() or len(password) < 8:
-        return False
-    for i in password.lower():
-        if i not in "abcdefghijklmnopqrstuvwxyzабвгдеёжзийклм" \
-                    "нопрстуфхцчшщъыьэюя0123456789!@$#_":
-            return False
-    digits = ""
-    special = ""
-    for i in "0123456789":
-        if i in password:
-            digits += i
-    for i in "!@$#":
-        if i in password:
-            special += i
-    if not special or not digits:
-        return False
-    return True
+    if password.split():
+        return True
+    return False
 
 
 def allowed_type(filename, types):
@@ -103,7 +89,8 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 @app.route("/popular", methods=["GET"])
 def popular_page():
     name = ['url'] + db.get_requests_types()
-    total = db.get_popular()
+
+    total = db.requests_by_user_id(current_user.id)
     total = {x[0]: x[-1] for x in total.values()}
     slovar_total = list(total.keys())
     if current_user.is_authenticated:
@@ -118,11 +105,24 @@ def popular_page():
 
 @app.route("/", methods=["GET"])
 def index():
-    name = ['url'] + db.get_requests_types()
-
-    total = db.requests_by_user_id(current_user.id)
-    total = {x[0]: x[-1] for x in total.values()}
-    slovar_total = list(total.keys())
+    name = ['сайт', 'RU', 'US', 'PO'] + ['Статус модерации']
+    total = {'1': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'eeee'},
+             '2': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'neeee'},
+             '3': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'Бааааан'},
+             '4': {'RU request': '100',
+                   'US': '0',
+                   'PO': '4',
+                   'Статус модерации': 'Бааааан'}}
+    slovar_total = ['1', '2', '3', '4']
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
@@ -133,9 +133,18 @@ def index():
     return redirect("/login")
 
 
-@app.route("/add_a_website", methods=["GET"])
+@app.route("/add_a_website", methods=["GET", "POST"])
 def add_a_website():
-    return render_template("add.html")
+    if request.method == "GET":
+        return render_template("add.html")
+    elif request.method == "POST":
+        if request.form.get("url") and request.form.get("name"):
+            db.add_syte((request.form["url"], request.form["name"]), current_user.id)
+            flash("Дело сделано", "success")
+            return redirect("/")
+        else:
+            flash("Слышь, говори нормально, а то получишь по щам", "danger")
+            return redirect("/add_a_website")
 
 
 @app.route("/rating", methods=["GET"])
@@ -172,24 +181,17 @@ def signup():
         if request.form["password"] == request.form[
             "password_sec"] and password_is_correct(request.form["password"]):
             db_sess = db_session.create_session()
-            c = db_sess.query(User).count()
-            if c:
-                existing_user = db_sess.query(User).filter(
-                    User.email == request.form["email"]).first()
-                if existing_user:
-                    flash("Ошибка регистрации: кто-то уже есть с такой почтой",
-                          "danger")
-                    return redirect("/signup")
+            existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
+            if existing_user:
+                flash("Ошибка регистрации: кто-то уже есть с такой почтой",
+                      "danger")
+                return redirect("/signup")
             user = User()
             user.name = request.form["name"]
             user.surname = request.form["surname"]
             user.email = request.form["email"]
             user.hashed_password = generate_password_hash(
                 request.form["password"])
-            if not c:
-                user.is_admin = True
-            else:
-                user.is_admin = False
             db_sess.add(user)
             db_sess.commit()
             login_user(user)
@@ -234,11 +236,6 @@ def login():
 def logout():
     logout_user()
     return redirect("/")
-
-
-@app.route("/add_site", methods=["POST", "GET"])
-def add_site_page():
-    return render_template("add_site.html")
 
 
 @app.route("/site_repost", methods=["POST", "GET"])
@@ -295,4 +292,4 @@ if __name__ == "__main__":
     db = db_api.DB("./db", "detector2.db")
     db.global_init()
     db_session.global_init("db/detector2.db")
-    app.run(host="0.0.0.0", port=8080, debug=True)
+    app.run(host="0.0.0.0", port=8080, debug=False)
