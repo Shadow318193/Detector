@@ -126,7 +126,7 @@ def add_a_website():
         return render_template("add.html")
     elif request.method == "POST":
         if request.form.get("url") and request.form.get("name"):
-            db.add_syte((request.form["url"], request.form["name"]), current_user.id)
+            db.add_site((request.form["url"], request.form["name"]), current_user.id)
             flash("Сайт добавлен", "success")
             return redirect("/")
         else:
