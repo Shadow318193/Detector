@@ -88,12 +88,12 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 
 @app.route("/popular", methods=["GET"])
 def popular_page():
-    if current_user.is_authenticated:
-        name = ['название'] + db.get_requests_types()
+    name = ['название'] + db.get_requests_types()
 
-        total = db.get_popular()
-        total = {(x[0], x[1]): x[-1] for x in total.values()}
-        slovar_total = list(total.keys())
+    total = db.get_popular()
+    total = {(x[0], x[1]): x[-1] for x in total.values()}
+    slovar_total = list(total.keys())
+    if current_user.is_authenticated:
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
         return render_template("popular.html", current_user=current_user,
@@ -105,12 +105,12 @@ def popular_page():
 
 @app.route("/", methods=["GET"])
 def index():
+    name = ['название'] + db.get_requests_types()
+
+    total = db.requests_by_user_id(current_user.id)
+    total = {(x[0], x[1]): x[-1] for x in total.values()}
+    slovar_total = list(total.keys())
     if current_user.is_authenticated:
-        name = ['название'] + db.get_requests_types()
-        total = db.requests_by_user_id(current_user.id)
-        total = {(x[0], x[1]): x[-1] for x in total.values()}
-        slovar_total = list(total.keys())
-        non_moder = db.non_moderated_by_user_id(current_user.id)
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
         return render_template("index (1).html", current_user=current_user,
@@ -121,7 +121,6 @@ def index():
 
 
 @app.route("/add_a_website", methods=["GET", "POST"])
-@login_required
 def add_a_website():
     if request.method == "GET":
         return render_template("add.html")
@@ -234,24 +233,13 @@ def site_repost_page():
 
 
 @app.route("/admin", methods=["GET", "POST"])
-@login_required
 def admin_page():
+    total = db.non_moderated_list()
+    name = list(total.keys())
     if request.method == "GET":
-        total = db.non_moderated_list()
-        name = list(total.keys())
         return render_template("admin.html", number=len(name), total=total, name=name)
     elif request.method == "POST":
-        new_name = request.form["fname"]
-        d = list(request.form.keys())[0].split(" ")
-        url, method = "".join(d[:-1]), d[-1]
-        id_s = db.get_id_site_by_url(url)
-        if method == "accept":
-            db.set_moder((id_s, 1))
-        else:
-            db.set_moder((id_s, -1))
-        db.set_name_for_site(id_s, new_name)
-        flash("Сайт обработан!", "success")
-        return redirect("/")
+        pass
 
 
 @app.errorhandler(401)
