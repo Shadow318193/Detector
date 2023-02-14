@@ -125,7 +125,8 @@ class DB:
             for requests_t in requests_types:
                 o = self.connect("""SELECT status FROM requests WHERE site_id=? AND
                                  request_type_id=? ORDER BY time DESC LIMIT 1;""",
-                                 fetchall=True, params=(site[0], requests_t[0],))
+                                 fetchall=True,
+                                 params=(site[0], requests_t[0],))
                 if not o:
                     continue
                 requests_lst[-1][requests_t[1]] = o[0][0]
@@ -208,8 +209,8 @@ class DB:
         else:
             time_s = time_s[0][0]
         requests_count = \
-        self.connect("""SELECT COUNT(*) FROM requests WHERE site_id=?;""",
-                     params=(site_id,), fetchall=True)[0][0]
+            self.connect("""SELECT COUNT(*) FROM requests WHERE site_id=?;""",
+                         params=(site_id,), fetchall=True)[0][0]
         bad_requests_count = self.connect("""SELECT COUNT(*) FROM
          requests WHERE site_id=? AND status <> 200 AND status <> 301;""",
                                           params=(site_id,), fetchall=True)[0][
@@ -233,7 +234,9 @@ class DB:
 
     def get_popular(self):
         data = dict()
-        ids = self.connect("""SELECT id, name, url from sites WHERE is_moderated=1 ORDER BY id LIMIT 3""", fetchall=True)
+        ids = self.connect(
+            """SELECT id, name, url from sites WHERE is_moderated=1 ORDER BY id LIMIT 3""",
+            fetchall=True)
         requests_types = self.connect(
             """SELECT id, type FROM requests_types;""",
             fetchall=True)
@@ -242,7 +245,8 @@ class DB:
             for requests_t in requests_types:
                 o = self.connect("""SELECT status FROM requests WHERE site_id=? AND
                                  request_type_id=? ORDER BY time DESC LIMIT 1;""",
-                                 fetchall=True, params=(site[0], requests_t[0],))
+                                 fetchall=True,
+                                 params=(site[0], requests_t[0],))
                 if not o:
                     continue
                 requests_lst[-1][requests_t[1]] = o[0][0]

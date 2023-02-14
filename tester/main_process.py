@@ -17,6 +17,5 @@ class Parser:
             for country in response:
                 db.add_request(country)
 
-
 # p = Parser()
 # p.push_data(db)
