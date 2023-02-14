@@ -2,27 +2,38 @@
 {% block main_content %}
     <div class="row pb-3">
 
-        <p>Ваши сайты: </p>
-        <table class="table table-bordered">
-            <thead class="thead-dark">
-            <tr>
-                {% for i in range(number) %}
-                    <th scope="col">{{ name[i] }}</th>
-                {% endfor %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for i in range(number2) %}
+            <p>Ваши сайты: </p>
+            <table class="table table-bordered">
+                <thead class="thead-dark">
                 <tr>
-                    <th>
-                        <a href={{ slovar_total[i][1] }} scope="row">{{ slovar_total[i][0] }}</a>
-                    </th>
-                    {% for j in range(number - 1) %}
-                        <td>{{ total[slovar_total[i]][name[j + 1]] }}</td>
+                    {% for i in range(number) %}
+                    <th scope="col">{{ name[i] }}</th>
                     {% endfor %}
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                </thead>
+                <tbody>
+                {% for i in range(number2) %}
+                <tr>
+<!--                    <th><a href={{slovar_total[i][1]}} scope="row" style="color: #000000; text-decoration: none;">-->
+<!--                        {{slovar_total[i][0]}}-->
+<!--                    </a></th>-->
+                    <th><a href={{slovar_total[i][1]}} scope="row">
+                        {{slovar_total[i][0]}}
+                    </a></th>
+                    {% for j in range(number - 1) %}
+<!--                    <td align="center">-->
+                    <td>
+                        {% if total[slovar_total[i]][name[j + 1]]%}
+                        <b>{{total[slovar_total[i]][name[j + 1]]|first}}</b>
+                        <br><i><small>{{total[slovar_total[i]][name[j + 1]]|last}} ms</small></i></br>
+                        {% else %}
+                        <b></b>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 {% endblock %}

@@ -123,13 +123,13 @@ class DB:
 
             requests_lst = [name_site, url_site, {}]
             for requests_t in requests_types:
-                o = self.connect("""SELECT status FROM requests WHERE site_id=? AND
+                o = self.connect("""SELECT status, duration FROM requests WHERE site_id=? AND
                                  request_type_id=? ORDER BY time DESC LIMIT 1;""",
                                  fetchall=True,
                                  params=(site[0], requests_t[0],))
                 if not o:
                     continue
-                requests_lst[-1][requests_t[1]] = o[0][0]
+                requests_lst[-1][requests_t[1]] = o[0]
             data[site[0]] = requests_lst
         return data
 
@@ -243,13 +243,13 @@ class DB:
         for site in ids:
             requests_lst = [site[1], site[2], {}]
             for requests_t in requests_types:
-                o = self.connect("""SELECT status FROM requests WHERE site_id=? AND
+                o = self.connect("""SELECT status, duration FROM requests WHERE site_id=? AND
                                  request_type_id=? ORDER BY time DESC LIMIT 1;""",
                                  fetchall=True,
                                  params=(site[0], requests_t[0],))
                 if not o:
                     continue
-                requests_lst[-1][requests_t[1]] = o[0][0]
+                requests_lst[-1][requests_t[1]] = o[0]
             data[site[0]] = requests_lst
         return data
 
@@ -258,8 +258,8 @@ if __name__ == "__main__":
     db = DB("../db", "detector2.db")
     print(db.non_moderated_list())
     # db.global_init()
-    # x = db.requests_by_user_id(1)
-    # print(x)
+    x = db.requests_by_user_id(1)
+    print(x)
     # print(db.get_requests_types())
     print(db.get_popular())
     # x = db.rejected_by_user_id(1)
