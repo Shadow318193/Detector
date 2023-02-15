@@ -232,11 +232,24 @@ def site_repost_page():
     return render_template("site_repost.html")
 
 
-@app.route("/admin", methods=["GET"])
+@app.route("/admin", methods=["GET", "POST"])
 def admin_page():
-    total = db.non_moderated_list()
-    name = list(total.keys())
-    return render_template("admin.html", number=len(name), total=total, name=name)
+    if request.method == "GET":
+        total = db.non_moderated_list()
+        name = list(total.keys())
+        return render_template("admin.html", number=len(name), total=total, name=name)
+    elif request.method == "POST":
+        new_name = request.form["fname"]
+        d = list(request.form.keys())[0].split(" ")
+        url, method = "".join(d[:-1]), d[-1]
+        id_s = db.get_id_site_by_url(url)
+        if method == "accept":
+            db.set_moder((id_s, 1))
+        else:
+            db.set_moder((id_s, -1))
+        db.set_name_for_site(id_s, new_name)
+        flash("Сайт обработан!", "success")
+        return redirect("/")
 
 
 @app.errorhandler(401)

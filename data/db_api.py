@@ -192,10 +192,10 @@ class DB:
          VALUES(?, ?);""", params=(user_id, site_id,))
 
     def set_moder(self, id_state: tuple):
-        self.connect(
+        id_s = self.connect(
             """UPDATE sites SET is_moderated=? WHERE id=? RETURNING id;""",
             params=id_state[::-1], fetchall=True)
-        if not id:
+        if not id_s:
             return -1
         else:
             return 0
@@ -253,15 +253,30 @@ class DB:
             data[site[0]] = requests_lst
         return data
 
+    def get_id_site_by_url(self, url):
+        id_site = self.connect("""SELECT id FROM sites WHERE url=?""",
+                               params=(url, ), fetchall=True)
+        return id_site[0][0]
+
+    def set_name_for_site(self, id_site, name):
+        id_s = self.connect("""UPDATE sites SET name=? WHERE id=? RETURNING id;""",
+                     params=(name, id_site, ), fetchall=True)
+        if not id_s:
+            return -1
+        else:
+            return 0
+
 
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
-    print(db.non_moderated_list())
-    # db.global_init()
-    x = db.requests_by_user_id(1)
-    print(x)
+    # print(db.non_moderated_list())
+    # # db.global_init()
+    # x = db.requests_by_user_id(1)
+    # print(x)
+    print(db.set_name_for_site(56, "коин"))
+    # print(db.get_id_site_by_url("https://test.com"))
     # print(db.get_requests_types())
-    print(db.get_popular())
+    # print(db.get_popular())
     # x = db.rejected_by_user_id(1)
     # x = db.add_syte(("https://sqliteonline.com/", "sqlite_online"), 1)
     # print(db.set_moder((5, 1)))
