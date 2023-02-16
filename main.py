@@ -233,7 +233,25 @@ def site_repost_page():
     return render_template("site_repost.html")
 
 
-@app.route("/admin", methods=["GET", "POST"])
+@app.route("/reject_rejection", methods=["GET"])
+@login_required
+def reject_rejection():
+    return render_template("reject_rejection.html")
+
+
+@app.route("/choice", methods=["GET"])
+@login_required
+def choice():
+    return render_template("choice.html")
+
+
+@app.route("/reject_moderation", methods=["GET"])
+@login_required
+def reject_moderation():
+    return render_template("reject_moderation.html")
+
+
+@app.route("/admin", methods=["POST"])
 @login_required
 def admin_page():
     if request.method == "GET":
