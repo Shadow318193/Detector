@@ -116,7 +116,8 @@ def index():
         return render_template("index (1).html", current_user=current_user,
                                user=user, total=total, name=name,
                                slovar_total=slovar_total, number=len(name),
-                               number2=len(slovar_total))
+                               number2=len(slovar_total), non_moder=non_moder,
+                               number3=len(non_moder), non_moder_keys=list(non_moder.keys()))
     return redirect("/login")
 
 
