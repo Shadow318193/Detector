@@ -237,40 +237,52 @@ def site_repost_page():
 @app.route("/reject_rejection", methods=["GET"])
 @login_required
 def reject_rejection():
-    return render_template("reject_rejection.html")
+    if current_user.is_admin:
+        return render_template("reject_rejection.html")
+    else:
+        abort(403)
 
 
 @app.route("/choice", methods=["GET"])
 @login_required
 def choice():
-    return render_template("choice.html")
+    if current_user.is_admin:
+        return render_template("choice.html")
+    else:
+        abort(403)
 
 
 @app.route("/reject_moderation", methods=["GET"])
 @login_required
 def reject_moderation():
-    return render_template("reject_moderation.html")
+    if current_user.is_admin:
+        return render_template("reject_moderation.html")
+    else:
+        abort(403)
 
 
-@app.route("/admin", methods=["POST"])
+@app.route("/admin", methods=["POST", "GET"])
 @login_required
 def admin_page():
-    if request.method == "GET":
-        total = db.non_moderated_list()
-        name = list(total.keys())
-        return render_template("admin.html", number=len(name), total=total, name=name)
-    elif request.method == "POST":
-        new_name = request.form["fname"]
-        d = list(request.form.keys())[0].split(" ")
-        url, method = "".join(d[:-1]), d[-1]
-        id_s = db.get_id_site_by_url(url)
-        if method == "accept":
-            db.set_moder((id_s, 1))
-        else:
-            db.set_moder((id_s, -1))
-        db.set_name_for_site(id_s, new_name)
-        flash("Сайт обработан!", "success")
-        return redirect("/")
+    if current_user.is_admin:
+        if request.method == "GET":
+            total = db.non_moderated_list()
+            name = list(total.keys())
+            return render_template("admin.html", number=len(name), total=total, name=name)
+        elif request.method == "POST":
+            new_name = request.form["fname"]
+            d = list(request.form.keys())[0].split(" ")
+            url, method = "".join(d[:-1]), d[-1]
+            id_s = db.get_id_site_by_url(url)
+            if method == "accept":
+                db.set_moder((id_s, 1))
+            else:
+                db.set_moder((id_s, -1))
+            db.set_name_for_site(id_s, new_name)
+            flash("Сайт обработан!", "success")
+            return redirect("/")
+    else:
+        abort(403)
 
 
 @app.errorhandler(401)
