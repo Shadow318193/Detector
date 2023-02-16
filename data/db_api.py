@@ -265,12 +265,13 @@ class DB:
 
     def get_id_site_by_url(self, url):
         id_site = self.connect("""SELECT id FROM sites WHERE url=?""",
-                               params=(url, ), fetchall=True)
+                               params=(url,), fetchall=True)
         return id_site[0][0]
 
     def set_name_for_site(self, id_site, name):
-        id_s = self.connect("""UPDATE sites SET name=? WHERE id=? RETURNING id;""",
-                     params=(name, id_site, ), fetchall=True)
+        id_s = self.connect(
+            """UPDATE sites SET name=? WHERE id=? RETURNING id;""",
+            params=(name, id_site,), fetchall=True)
         if not id_s:
             return -1
         else:
