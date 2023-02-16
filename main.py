@@ -88,12 +88,12 @@ app.config['MAX_CONTENT_LENGTH'] = 128 * 1024 * 1024
 
 @app.route("/popular", methods=["GET"])
 def popular_page():
-    name = ['название'] + db.get_requests_types()
-
-    total = db.get_popular()
-    total = {(x[0], x[1]): x[-1] for x in total.values()}
-    slovar_total = list(total.keys())
     if current_user.is_authenticated:
+        name = ['название'] + db.get_requests_types()
+
+        total = db.get_popular()
+        total = {(x[0], x[1]): x[-1] for x in total.values()}
+        slovar_total = list(total.keys())
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
         return render_template("popular.html", current_user=current_user,
@@ -105,12 +105,12 @@ def popular_page():
 
 @app.route("/", methods=["GET"])
 def index():
-    name = ['название'] + db.get_requests_types()
-
-    total = db.requests_by_user_id(current_user.id)
-    total = {(x[0], x[1]): x[-1] for x in total.values()}
-    slovar_total = list(total.keys())
     if current_user.is_authenticated:
+        name = ['название'] + db.get_requests_types()
+        total = db.requests_by_user_id(current_user.id)
+        total = {(x[0], x[1]): x[-1] for x in total.values()}
+        slovar_total = list(total.keys())
+        non_moder = db.non_moderated_by_user_id(current_user.id)
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
         return render_template("index (1).html", current_user=current_user,
@@ -121,6 +121,7 @@ def index():
 
 
 @app.route("/add_a_website", methods=["GET", "POST"])
+@login_required
 def add_a_website():
     if request.method == "GET":
         return render_template("add.html")
@@ -233,6 +234,7 @@ def site_repost_page():
 
 
 @app.route("/admin", methods=["GET", "POST"])
+@login_required
 def admin_page():
     if request.method == "GET":
         total = db.non_moderated_list()

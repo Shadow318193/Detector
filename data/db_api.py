@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 
 class DB:
@@ -22,60 +23,69 @@ class DB:
     def global_init(self):
         print(
             "Подключение к БД по адресу: " + '"' + self.directory + "/" + self.name + '"')
-        with open(self.directory + "/" + self.name, "a+"):
-            pass
-        self.connect("""
-            CREATE TABLE IF NOT EXISTS requests_types (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            type VARCHAR
-        );""")
-        self.connect("""
-        CREATE TABLE IF NOT EXISTS users (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email VARCHAR(64),
-            name VARCHAR(32) NOT NULL,
-            surname VARCHAR(32) NOT NULL,
-            hashed_password VARCHAR NOT NULL,
-            is_admin BOOL NOT NULL
-        );""")
-        self.connect("""
-        CREATE TABLE IF NOT EXISTS sites(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name VARCHAR DEFAULT "unnamed",
-            url VARCHAR,
-            is_moderated SMALLINT DEFAULT 0
-        );""")
-        self.connect("""
-        CREATE TABLE IF NOT EXISTS users_sites (
-            user_id INTEGER NOT NULL,
-            site_id INTEGER NOT NULL,
-            FOREIGN KEY (user_id) REFERENCES users (id),
-            FOREIGN KEY (site_id) REFERENCES sites (id)
+        if not os.path.exists(self.directory + "/" + self.name):
+            with open(self.directory + "/" + self.name, "a+"):
+                pass
+            self.connect("""
+                CREATE TABLE IF NOT EXISTS requests_types (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                type VARCHAR
             );""")
-        self.connect("""
-        CREATE TABLE IF NOT EXISTS requests (
-            id INTEGER PRIMARY KEY AUTOINCREMENT, 
-            time DATETIME, 
-            duration INTEGER, 
-            status INTEGER, 
-            site_id INTEGER, 
-            request_type_id INTEGER, 
-            FOREIGN KEY(site_id) REFERENCES sites (id), 
-            FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
-        );""")
-        # lst = ["DE request", "NL request", "SG request", "RU request",
-        #        "USA request", "UK request"]
-        # for i in lst:
-        #     self.connect("INSERT INTO requests_types (type) VALUES(?)",
-        #                  params=(i,))
-        # lst = [("https://proton.mskobr.ru/", "Образовательный центр «Протон»"),
-        #        ("https://www.msu.ru/",
-        #         "Московский государственный университет имени М.В.Ломоносова"),
-        #        ("https://mipt.ru/", "Московский физико-технический институт")]
-        # for i in lst:
-        #     site_id = self.connect("""INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
-        #      RETURNING id;""",
-        #                            fetchall=True, params=i)
+            self.connect("""
+            CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email VARCHAR(64),
+                name VARCHAR(32) NOT NULL,
+                surname VARCHAR(32) NOT NULL,
+                hashed_password VARCHAR NOT NULL,
+                is_admin BOOL NOT NULL
+            );""")
+            self.connect("""
+            CREATE TABLE IF NOT EXISTS sites(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name VARCHAR DEFAULT "unnamed",
+                url VARCHAR,
+                is_moderated SMALLINT DEFAULT 0
+            );""")
+            self.connect("""
+            CREATE TABLE IF NOT EXISTS users_sites (
+                user_id INTEGER NOT NULL,
+                site_id INTEGER NOT NULL,
+                tg_id INTEGER DEFAULT NULL,
+                email TEXT DEFAULT NULL,
+                FOREIGN KEY (user_id) REFERENCES users (id),
+                FOREIGN KEY (site_id) REFERENCES sites (id)
+                );""")
+            self.connect("""
+            CREATE TABLE IF NOT EXISTS requests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                time DATETIME, 
+                duration INTEGER, 
+                status INTEGER, 
+                site_id INTEGER, 
+                request_type_id INTEGER,
+                is_outdated BOOL DEFAULT FALSE,
+                FOREIGN KEY(site_id) REFERENCES sites (id), 
+                FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
+            );""")
+            self.connect("INSERT INTO users(email, name, surname, hashed_password, is_admin)"
+                         "VALUES (\"a@a.com\", \"admin\", \"admin\","
+                         "\"pbkdf2:sha256:"
+                         "260000$QyxkhHYIJ9hRUVJC$e7d12546636b8be81d364116d150cf76729b12cef1fd5084e872200117987d2c\","
+                         " 1)")
+            lst = ["DE request", "NL request", "SG request", "RU request",
+                   "USA request", "UK request"]
+            for i in lst:
+                self.connect("INSERT INTO requests_types (type) VALUES(?)",
+                             params=(i,))
+            lst = [("https://proton.mskobr.ru/", "Образовательный центр «Протон»"),
+                   ("https://www.msu.ru/",
+                    "Московский государственный университет имени М.В.Ломоносова"),
+                   ("https://mipt.ru/", "Московский физико-технический институт")]
+            for i in lst:
+                site_id = self.connect("""INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
+                 RETURNING id;""",
+                                   fetchall=True, params=i)
 
     def add_request(self, data):
         # id сайта
@@ -266,6 +276,24 @@ class DB:
         else:
             return 0
 
+    def moderated_by_user_id(self, user_id):
+        site_ids = self.connect(
+            """SELECT site_id FROM users_sites WHERE user_id=?;""",
+            params=(user_id,),
+            fetchall=True)
+        data = dict()
+        for site in site_ids:
+            d = self.connect("""SELECT name, url FROM sites WHERE id=? AND
+                                                                is_moderated=1;""",
+                             params=(site[0],),
+                             fetchall=True)
+            if not d:
+                continue
+            name_site, url_site = d[0]
+            data[site[0]] = [name_site, url_site]
+
+        return data
+
 
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
@@ -274,6 +302,9 @@ if __name__ == "__main__":
     # x = db.requests_by_user_id(1)
     # print(x)
     print(db.set_name_for_site(56, "коин"))
+    print(db.moderated_by_user_id(1))
+    print(db.non_moderated_by_user_id(1))
+    print(db.rejected_by_user_id(1))
     # print(db.get_id_site_by_url("https://test.com"))
     # print(db.get_requests_types())
     # print(db.get_popular())
