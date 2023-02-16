@@ -124,9 +124,9 @@ def index():
                                    number4=len(reject), reject=reject, reject_keys=list(reject.keys()))
         return redirect("/login")
     elif request.method == "POST":
-        site_id = db.get_id_site_by_url(list(request.form)[0].split()[0])
+        site_id = db.get_id_site_by_url(" ".join(list(request.form)[0].split()[:-1]))
         db.del_site_by_user_id(site_id, current_user.id)
-        flash("Сайт добавлен", "success")
+        flash("Сайт удален", "success")
         return redirect("/")
 
 @app.route("/add_a_website", methods=["GET", "POST"])
@@ -270,7 +270,7 @@ def admin_page():
     elif request.method == "POST":
         new_name = request.form["fname"]
         d = list(request.form.keys())[0].split(" ")
-        url, method = "".join(d[:-1]), d[-1]
+        url, method = " ".join(d[:-1]), d[-1]
         id_s = db.get_id_site_by_url(url)
         if method == "accept":
             db.set_moder((id_s, 1))
