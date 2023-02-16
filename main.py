@@ -111,13 +111,16 @@ def index():
         total = {(x[0], x[1]): x[-1] for x in total.values()}
         slovar_total = list(total.keys())
         non_moder = db.non_moderated_by_user_id(current_user.id)
+        reject = db.rejected_by_user_id(current_user.id)
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
+        print(list(non_moder.keys()), '----------------------')
         return render_template("index (1).html", current_user=current_user,
                                user=user, total=total, name=name,
                                slovar_total=slovar_total, number=len(name),
                                number2=len(slovar_total), non_moder=non_moder,
-                               number3=len(non_moder), non_moder_keys=list(non_moder.keys()))
+                               number3=len(non_moder), non_moder_keys=list(non_moder.keys()),
+                               number4=len(reject), reject=reject, reject_keys=list(reject.keys()))
     return redirect("/login")
 
 
@@ -237,52 +240,40 @@ def site_repost_page():
 @app.route("/reject_rejection", methods=["GET"])
 @login_required
 def reject_rejection():
-    if current_user.is_admin:
-        return render_template("reject_rejection.html")
-    else:
-        abort(403)
+    return render_template("reject_rejection.html")
 
 
 @app.route("/choice", methods=["GET"])
 @login_required
 def choice():
-    if current_user.is_admin:
-        return render_template("choice.html")
-    else:
-        abort(403)
+    return render_template("choice.html")
 
 
 @app.route("/reject_moderation", methods=["GET"])
 @login_required
 def reject_moderation():
-    if current_user.is_admin:
-        return render_template("reject_moderation.html")
-    else:
-        abort(403)
+    return render_template("reject_moderation.html")
 
 
-@app.route("/admin", methods=["POST", "GET"])
+@app.route("/admin", methods=["GET", "POST"])
 @login_required
 def admin_page():
-    if current_user.is_admin:
-        if request.method == "GET":
-            total = db.non_moderated_list()
-            name = list(total.keys())
-            return render_template("admin.html", number=len(name), total=total, name=name)
-        elif request.method == "POST":
-            new_name = request.form["fname"]
-            d = list(request.form.keys())[0].split(" ")
-            url, method = "".join(d[:-1]), d[-1]
-            id_s = db.get_id_site_by_url(url)
-            if method == "accept":
-                db.set_moder((id_s, 1))
-            else:
-                db.set_moder((id_s, -1))
-            db.set_name_for_site(id_s, new_name)
-            flash("Сайт обработан!", "success")
-            return redirect("/")
-    else:
-        abort(403)
+    if request.method == "GET":
+        total = db.non_moderated_list()
+        name = list(total.keys())
+        return render_template("admin.html", number=len(name), total=total, name=name)
+    elif request.method == "POST":
+        new_name = request.form["fname"]
+        d = list(request.form.keys())[0].split(" ")
+        url, method = "".join(d[:-1]), d[-1]
+        id_s = db.get_id_site_by_url(url)
+        if method == "accept":
+            db.set_moder((id_s, 1))
+        else:
+            db.set_moder((id_s, -1))
+        db.set_name_for_site(id_s, new_name)
+        flash("Сайт обработан!", "success")
+        return redirect("/")
 
 
 @app.errorhandler(401)

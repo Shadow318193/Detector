@@ -2,7 +2,7 @@
 {% block main_content %}
     <div class="row pb-3">
 
-            <p>Ваши сайты: </p>
+            <h1>Ваши сайты: </h1>
             <table class="table table-bordered">
                 <thead class="thead-dark">
                 <tr>
@@ -36,4 +36,19 @@
                 </tbody>
             </table>
         </div>
+    <div class="row pb-3">
+        <h2>Ожидание модерации:{% for i in range(number3) %}
+            <small><small><a href={{non_moder[non_moder_keys[i]][1]}} style="color: #000000; text-decoration: none">
+                {{non_moder[non_moder_keys[i]][0]}}</a>{% if i != number3 - 1 %}, {% endif %}</small></small>
+            {% endfor %}</h2>
+
+    </div>
+    <div class="row pb-3">
+        <h2>Забаненные:{% for i in range(number4) %}
+            <small><small><a href={{reject[reject_keys[i]][1]}} style="color: #000000; text-decoration: none">
+                {{reject[reject_keys[i]][0]}}</a>{% if i != number4 - 1 %}, {% endif %}</small></small>
+            {% endfor %}</h2>
+
+    </div>
+
 {% endblock %}
