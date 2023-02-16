@@ -103,26 +103,31 @@ def popular_page():
     return redirect("/login")
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
-    if current_user.is_authenticated:
-        name = ['название'] + db.get_requests_types()
-        total = db.requests_by_user_id(current_user.id)
-        total = {(x[0], x[1]): x[-1] for x in total.values()}
-        slovar_total = list(total.keys())
-        non_moder = db.non_moderated_by_user_id(current_user.id)
-        reject = db.rejected_by_user_id(current_user.id)
-        db_sess = db_session.create_session()
-        user = db_sess.query(User).filter(User.id == current_user.id).first()
-        print(list(non_moder.keys()), '----------------------')
-        return render_template("index (1).html", current_user=current_user,
-                               user=user, total=total, name=name,
-                               slovar_total=slovar_total, number=len(name),
-                               number2=len(slovar_total), non_moder=non_moder,
-                               number3=len(non_moder), non_moder_keys=list(non_moder.keys()),
-                               number4=len(reject), reject=reject, reject_keys=list(reject.keys()))
-    return redirect("/login")
-
+    if request.method == "GET":
+        if current_user.is_authenticated:
+            name = ['название'] + db.get_requests_types() + ["удалить"]
+            name = ['название'] + db.get_requests_types() + ["удалить"]
+            total = db.requests_by_user_id(current_user.id)
+            total = {(x[0], x[1]): x[-1] for x in total.values()}
+            slovar_total = list(total.keys())
+            non_moder = db.non_moderated_by_user_id(current_user.id)
+            reject = db.rejected_by_user_id(current_user.id)
+            db_sess = db_session.create_session()
+            user = db_sess.query(User).filter(User.id == current_user.id).first()
+            return render_template("index (1).html", current_user=current_user,
+                                   user=user, total=total, name=name,
+                                   slovar_total=slovar_total, number=len(name),
+                                   number2=len(slovar_total), non_moder=non_moder,
+                                   number3=len(non_moder), non_moder_keys=list(non_moder.keys()),
+                                   number4=len(reject), reject=reject, reject_keys=list(reject.keys()))
+        return redirect("/login")
+    elif request.method == "POST":
+        site_id = db.get_id_site_by_url(list(request.form)[0].split()[0])
+        db.del_site_by_user_id(site_id, current_user.id)
+        flash("Сайт добавлен", "success")
+        return redirect("/")
 
 @app.route("/add_a_website", methods=["GET", "POST"])
 @login_required
