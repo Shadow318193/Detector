@@ -26,8 +26,5 @@ class SenderBot:
         except:
             print("Error")
 
-
-# id = int(input())
 # b = SenderBot()
-# for _ in range(5):
-#     b.send_to_telegram(id, "test message")
+# b.send_to_mail("test@gmail", "privet")
