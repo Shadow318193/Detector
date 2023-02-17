@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block main_content %}
+  <div class="text-center mb-5">
+        <h1>Выберите, что хотите сделать:</h1>
+  </div>
+<div class="text-center mb-5">
+        <a href="/reject_rejection"
+               class="btn btn-info btn-lg">Отменить отклонение модерации</a>
+        <a href="/admin"
+               class="btn btn-info btn-lg">Модерировать</a>
+        <a href="/reject_moderation"
+               class="btn btn-info btn-lg">Отменить модерацию</a>
+</div>
+{% endblock %}

@@ -295,17 +295,21 @@ class DB:
 
         return data
 
+    def del_site_by_user_id(self, site_id, user_id):
+        self.connect("""DELETE FROM users_sites WHERE site_id=? AND user_id=?""",
+                     params=(site_id, user_id, ), fetchall=True)
 
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
+    # db.del_site_by_user_id(4, 1)
     # print(db.non_moderated_list())
     # # db.global_init()
     # x = db.requests_by_user_id(1)
     # print(x)
-    print(db.set_name_for_site(56, "коин"))
-    print(db.moderated_by_user_id(1))
+    # print(db.set_name_for_site(56, "коин"))
+    # print(db.moderated_by_user_id(1))
     print(db.non_moderated_by_user_id(1))
-    print(db.rejected_by_user_id(1))
+    # print(db.rejected_by_user_id(1))
     # print(db.get_id_site_by_url("https://test.com"))
     # print(db.get_requests_types())
     # print(db.get_popular())
