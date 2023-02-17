@@ -1,23 +1,33 @@
 {% extends 'base.html' %}
 {% block main_content %}
-    <form method="post">
-        <div class="text-center mb-5">
-            <label>Сайт: </label>
-            <label><th><a href={{url}} scope="row">
-                        {{name}}
-                    </a></th></label>
-        </div>
-        <div class="text-center mb-5">
-            <label>Последняя проверка:</label>
-            <label>{{total["time start"]}}</label>
-        </div>
-        <div class="text-center mb-5">
-            <label>Общее количество запросов:</label>
-            <label>{{total["requests count"]}}</label>
-        </div>
-        <div class="text-center mb-5">
-            <label>Количество отрицательных запросов:</label>
-            <label>{{total["bad requests count"]}}</label>
-        </div>
-    </form>
+    <h2>Статистика: </h2>
+    <table class="table table-bordered">
+        <thead></thead>
+        <tbody>
+            <tr>
+                <div class="text-center mb-5">
+                <th>Сайт: </th>
+                <th><a href={{url}} scope="row">{{name}}</a></th>
+                </div>
+            </tr>
+            <tr>
+                <div class="text-center mb-5">
+                <th>Последняя проверка:</th>
+                <th>{{total["time start"]}}</th>
+            </div>
+            </tr>
+            <tr>
+                <div class="text-center mb-5">
+                    <th>Общее количество запросов:</th>
+                    <th>{{total["requests count"]}}</th>
+                </div>
+            </tr>
+            <tr>
+                <div class="text-center mb-5">
+                <th>Количество отрицательных запросов:</th>
+                <th>{{total["bad requests count"]}}</th>
+            </div>
+            </tr>
+        </tbody>
+    </table>
 {% endblock %}

@@ -93,7 +93,7 @@ def popular_page():
         name = ['название'] + db.get_requests_types()
 
         total = db.get_popular()
-        total = {(x[0], x[1]): x[-1] for x in total.values()}
+        total = {(x[0], x[1], n): x[-1] for n, x in total.items()}
         slovar_total = list(total.keys())
         db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.id == current_user.id).first()
@@ -293,10 +293,13 @@ def admin_page():
 @login_required
 def statistic_page(site_id):
     total = db.get_statistic(site_id)
+    popular = db.connect(
+            """SELECT id from sites WHERE is_moderated=1 ORDER BY id LIMIT 3""",
+            fetchall=True)
     if not db.connect("""SELECT user_id, site_id FROM users_sites WHERE user_id=? AND
                                             site_id=?;""",
                       params=(current_user.id, site_id),
-                      fetchall=True):
+                      fetchall=True) and (site_id, ) not in popular:
         abort(404)
     d = db.connect("""SELECT name, url FROM sites WHERE id=? AND
                                             is_moderated=1;""",
