@@ -2,16 +2,22 @@
 {% block main_content %}
     <form method="post">
         <div class="text-center mb-5">
+            <label>Сайт: </label>
+            <label><th><a href={{url}} scope="row">
+                        {{name}}
+                    </a></th></label>
+        </div>
+        <div class="text-center mb-5">
             <label>Последняя проверка:</label>
-            <label>{{}}</label>
+            <label>{{total["time start"]}}</label>
         </div>
         <div class="text-center mb-5">
             <label>Общее количество запросов:</label>
-            <label>{{}}</label>
+            <label>{{total["requests count"]}}</label>
         </div>
         <div class="text-center mb-5">
             <label>Количество отрицательных запросов:</label>
-            <label>{{}}</label>
+            <label>{{total["bad requests count"]}}</label>
         </div>
     </form>
 {% endblock %}

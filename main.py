@@ -9,12 +9,21 @@ from data.users import User
 from data import db_session
 
 import datetime
+import logging
+import os
 
 AVATAR_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_PIC_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_VID_TYPES = ["webm", "mp4"]
 MEDIA_AUD_TYPES = ["mp3", "wav"]
 MEDIA_TYPES = MEDIA_VID_TYPES + MEDIA_PIC_TYPES + MEDIA_AUD_TYPES
+
+
+# logging.basicConfig(format=u'%(filename)+13s [ LINE:%(lineno)-4s]'
+# u' %(levelname)-8s [%(asctime)s] %(message)s',
+# level=logging.DEBUG,
+# filename='website-logging.log',
+# filemode='w')
 
 
 def make_accept_for_html(mime: str):
@@ -278,6 +287,26 @@ def admin_page():
         db.set_name_for_site(id_s, new_name)
         flash("Сайт обработан!", "success")
         return redirect("/")
+
+
+@app.route("/statistic/<int:site_id>", methods=["GET"])
+@login_required
+def statistic_page(site_id):
+    total = db.get_statistic(site_id)
+    if not db.connect("""SELECT user_id, site_id FROM users_sites WHERE user_id=? AND
+                                            site_id=?;""",
+                      params=(current_user.id, site_id),
+                      fetchall=True):
+        abort(404)
+    d = db.connect("""SELECT name, url FROM sites WHERE id=? AND
+                                            is_moderated=1;""",
+                   params=(site_id,),
+                   fetchall=True)
+    if not d:
+        abort(404)
+    name_site, url_site = d[0]
+    return render_template("report.html", total=total, url=url_site,
+                           name=name_site)
 
 
 @app.errorhandler(401)
