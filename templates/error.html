@@ -5,8 +5,9 @@
         Ошибка {{ code }}</h1></div>
     <h1 class="text-center py-5">{{ err }}</h1>
     {% if code == 404 %}
-        <div class="text-center mb-5">
-            <a class="btn btn-lg btn-info" href="/">Вернуться</a>
+        <div class="d-grid gap-4 col-7 mx-auto">
+            <a href="/"
+               class="btn btn-secondary btn-lg">Вернуться</a>
         </div>
     {% endif %}
 

@@ -5,35 +5,40 @@
         <table class="table table-bordered">
             <thead class="thead-dark">
             <tr>
-                 <th scope="col">Ссылка на сайт</th>
-                 <th scope="col">Да или нет</th>
-                 <th scope="col">Поменять название</th>
+                <th scope="col">Ссылка на сайт</th>
+                <th scope="col">Да или нет</th>
+                <th scope="col">Поменять название</th>
             </tr>
             </thead>
             <tbody>
             {% for i in range(number) %}
-            <form method="post">
-                <tr>
-                    <th>
-                        <a href={{ total[name[i]][1] }} scope="row">{{ total[name[i]][1] }}</a>
-                    </th>
-                    <th>
-                        <button type="submit" class="btn btn-info btn-lg"
-                                name="{{ name[i] }} accept">Да</button>
-                        <button type="submit" class="btn btn-info btn-lg"
-                                name="{{ name[i] }} denied">Нет</button>
-                    </th>
-                    <th>
-                    <input type="text" class="form-control" id="fname" name="fname" value="{{ total[name[i]][0] }}">
-                    </th>
+                <form method="post">
+                    <tr>
+                        <th>
+                            <a href={{ total[name[i]][1] }} scope="row">{{ total[name[i]][1] }}</a>
+                        </th>
+                        <th>
+                            <button type="submit" class="btn btn-info btn-lg"
+                                    name="{{ name[i] }} accept">Да
+                            </button>
+                            <button type="submit" class="btn btn-info btn-lg"
+                                    name="{{ name[i] }} denied">Нет
+                            </button>
+                        </th>
+                        <th>
+                            <input type="text" class="form-control" id="fname"
+                                   name="fname"
+                                   value="{{ total[name[i]][0] }}">
+                        </th>
 
-                </tr>
-            </form>
+                    </tr>
+                </form>
             {% endfor %}
             </tbody>
         </table>
     </div>
-    <div class="text-center mb-5">
-        <a href="/choice" class="btn btn-info btn-lg">Вернуться</a>
+    <div class="d-grid gap-4 col-7 mx-auto">
+        <a href="/choice"
+           class="btn btn-secondary btn-lg">Вернуться</a>
     </div>
 {% endblock %}
