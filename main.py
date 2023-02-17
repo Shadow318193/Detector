@@ -9,20 +9,12 @@ from data.users import User
 from data import db_session
 
 import datetime
-import logging
-import os
 
 AVATAR_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_PIC_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_VID_TYPES = ["webm", "mp4"]
 MEDIA_AUD_TYPES = ["mp3", "wav"]
 MEDIA_TYPES = MEDIA_VID_TYPES + MEDIA_PIC_TYPES + MEDIA_AUD_TYPES
-
-# logging.basicConfig(format=u'%(filename)+13s [ LINE:%(lineno)-4s]'
-                           # u' %(levelname)-8s [%(asctime)s] %(message)s',
-                    # level=logging.DEBUG,
-                    # filename='website-logging.log',
-                    # filemode='w')
 
 
 def make_accept_for_html(mime: str):
@@ -115,13 +107,17 @@ def index():
             non_moder = db.non_moderated_by_user_id(current_user.id)
             reject = db.rejected_by_user_id(current_user.id)
             db_sess = db_session.create_session()
-            user = db_sess.query(User).filter(User.id == current_user.id).first()
+            user = db_sess.query(User).filter(
+                User.id == current_user.id).first()
             return render_template("index (1).html", current_user=current_user,
                                    user=user, total=total, name=name,
                                    slovar_total=slovar_total, number=len(name),
-                                   number2=len(slovar_total), non_moder=non_moder,
-                                   number3=len(non_moder), non_moder_keys=list(non_moder.keys()),
-                                   number4=len(reject), reject=reject, reject_keys=list(reject.keys()))
+                                   number2=len(slovar_total),
+                                   non_moder=non_moder,
+                                   number3=len(non_moder),
+                                   non_moder_keys=list(non_moder.keys()),
+                                   number4=len(reject), reject=reject,
+                                   reject_keys=list(reject.keys()))
         return redirect("/login")
 
     elif request.method == "POST":
@@ -129,6 +125,7 @@ def index():
         db.del_site_by_user_id(site_id, current_user.id)
         flash("Сайт удален", "success")
         return redirect("/")
+
 
 @app.route("/add_a_website", methods=["GET", "POST"])
 @login_required
@@ -181,7 +178,8 @@ def signup():
         if request.form["password"] == request.form[
             "password_sec"] and password_is_correct(request.form["password"]):
             db_sess = db_session.create_session()
-            existing_user = db_sess.query(User).filter(User.email == request.form["email"]).first()
+            existing_user = db_sess.query(User).filter(
+                User.email == request.form["email"]).first()
             if existing_user:
                 flash("Ошибка регистрации: кто-то уже есть с такой почтой",
                       "danger")
@@ -267,7 +265,8 @@ def admin_page():
     if request.method == "GET":
         total = db.non_moderated_list()
         name = list(total.keys())
-        return render_template("admin.html", number=len(name), total=total, name=name)
+        return render_template("admin.html", number=len(name), total=total,
+                               name=name)
     elif request.method == "POST":
         new_name = request.form["fname"]
         d = list(request.form.keys())[0].split(" ")
