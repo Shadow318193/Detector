@@ -1,14 +1,15 @@
 import telebot
 import smtplib
-from botconfig import TOKEN, POST_ADDRESS
+from botconfig import TOKEN, POST_PASSWORD
 
 
 class SenderBot:
     TOKEN = TOKEN
-    POST_ADDRESS = POST_ADDRESS
+    POST_ADDRESS = "detector.esteam@gmail.com"
+    POST_PASSWORD = POST_PASSWORD
 
     def __init__(self) -> None:
-        self.tgbot = telebot.TeleBot(token=TOKEN)
+        self.tgbot = telebot.TeleBot(token=self.TOKEN)
         self.smtpbot = smtplib.SMTP('smtp.gmail.com', 587)
         self.smtpbot.starttls()
 
@@ -20,8 +21,8 @@ class SenderBot:
 
     def send_to_mail(self, user_post_address: str, message: str) -> None:
         try:
-            self.smtpbot.login(POST_ADDRESS, 'P@ssw0rd')
-            self.smtpbot.sendmail(POST_ADDRESS, user_post_address, message)
+            self.smtpbot.login(self.POST_ADDRESS, self.POST_PASSWORD)
+            self.smtpbot.sendmail(self.POST_ADDRESS, user_post_address, message)
         except:
             print("Error")
 

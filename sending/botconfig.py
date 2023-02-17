@@ -1,2 +1,2 @@
 TOKEN = ""
-POST_ADDRESS = "detector@gmail.com"
+POST_PASSWORD = ""
