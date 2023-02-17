@@ -22,9 +22,10 @@ class DB:
 
     def global_init(self):
         print(
-            "Подключение к БД по адресу: " + '"' + self.directory + "/" + self.name + '"')
+            "Connecting to the database at " + '"' + self.directory +
+            "/" + self.name + '"')
         if not os.path.exists(self.directory + "/" + self.name):
-            with open(self.directory + "/" + self.name, "a+"):
+            with open(self.directory + "/" + self.name, "w+"):
                 pass
             self.connect("""
                 CREATE TABLE IF NOT EXISTS requests_types (
@@ -68,24 +69,28 @@ class DB:
                 FOREIGN KEY(site_id) REFERENCES sites (id), 
                 FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
             );""")
-            self.connect("INSERT INTO users(email, name, surname, hashed_password, is_admin)"
-                         "VALUES (\"a@a.com\", \"admin\", \"admin\","
-                         "\"pbkdf2:sha256:"
-                         "260000$QyxkhHYIJ9hRUVJC$e7d12546636b8be81d364116d150cf76729b12cef1fd5084e872200117987d2c\","
-                         " 1)")
+            self.connect(
+                "INSERT INTO users(email, name, surname, hashed_password, is_admin)"
+                "VALUES (\"a@a.com\", \"admin\", \"admin\","
+                "\"pbkdf2:sha256:"
+                "260000$QyxkhHYIJ9hRUVJC$e7d12546636b8be81d364116d150cf76729b12cef1fd5084e872200117987d2c\","
+                " 1)")
             lst = ["DE request", "NL request", "SG request", "RU request",
                    "USA request", "UK request"]
             for i in lst:
                 self.connect("INSERT INTO requests_types (type) VALUES(?)",
                              params=(i,))
-            lst = [("https://proton.mskobr.ru/", "Образовательный центр «Протон»"),
+            lst = [("https://proton.mskobr.ru/",
+                    "Образовательный центр «Протон»"),
                    ("https://www.msu.ru/",
                     "Московский государственный университет имени М.В.Ломоносова"),
-                   ("https://mipt.ru/", "Московский физико-технический институт")]
+                   ("https://mipt.ru/",
+                    "Московский физико-технический институт")]
             for i in lst:
-                site_id = self.connect("""INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
+                site_id = self.connect(
+                    """INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
                  RETURNING id;""",
-                                   fetchall=True, params=i)
+                    fetchall=True, params=i)
 
     def add_request(self, data):
         # id сайта
@@ -265,7 +270,7 @@ class DB:
 
     def get_id_site_by_url(self, url):
         id_site = self.connect("""SELECT id FROM sites WHERE url=?""",
-                               params=(url, ), fetchall=True)
+                               params=(url,), fetchall=True)
         return id_site[0][0]
 
     def set_name_for_site(self, id_site, name):
@@ -296,8 +301,9 @@ class DB:
         return data
 
     def del_site_by_user_id(self, site_id, user_id):
-        self.connect("""DELETE FROM users_sites WHERE site_id=? AND user_id=?""",
-                     params=(site_id, user_id, ), fetchall=True)
+        self.connect(
+            """DELETE FROM users_sites WHERE site_id=? AND user_id=?""",
+            params=(site_id, user_id,), fetchall=True)
 
     def notification_tg(self):
         requests_types = self.connect(
@@ -329,7 +335,10 @@ class DB:
                 if o[0][0] != o[1][0] or o[0][1] / o[1][1] >= 2:
                     self.connect("""UPDATE requests SET status=? WHERE id=?""",
                                  params=(-1 * o[1][0], o[1][2]))
-                    d = (tg_id, email, [name_site, url_site], [o[1][0], o[0][0]], [o[1][1], o[0][1]])
+                    d = (
+                        tg_id, email, [name_site, url_site],
+                        [o[1][0], o[0][0]],
+                        [o[1][1], o[0][1]])
                     data.append(d)
 
         return data
