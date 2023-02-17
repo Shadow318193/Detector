@@ -1,17 +1,75 @@
 {% extends 'base.html' %}
 {% block main_content %}
     <div class="row pb-3">
-        <div class="col pb-3">
-            <div class="card" style="width: 18rem;">
-                <div class="card-body">
-                    <h5 class="card-title text-center">{{ current_user.surname }} {{ current_user.name }}</h5>
-                    {% if current_user.is_admin %}
-                        <h5 class="card-text text-center"
-                            style="color: #ff0000;">Администратор</h5>
-                    {% endif %}
-                </div>
-            </div>
+
+            <h1>Ваши сайты: </h1>
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                <tr>
+                    {% for i in range(number) %}
+                    <th scope="col">{{ name[i] }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in range(number2) %}
+                <tr>
+<!--                    <th><a href={{slovar_total[i][1]}} scope="row" style="color: #000000; text-decoration: none;">-->
+<!--                        {{slovar_total[i][0]}}-->
+<!--                    </a></th>-->
+                    <th><a href="/statistic/{{slovar_total[i][2]}}" scope="row">
+                        {{slovar_total[i][0]}}
+                    </a></th>
+                    {% for j in range(number - 2) %}
+<!--                    <td align="center">-->
+                    <td>
+                        {% if total[slovar_total[i]][name[j + 1]]%}
+                        <b>{{total[slovar_total[i]][name[j + 1]]|first}}</b>
+                        <br><i><small>{{total[slovar_total[i]][name[j + 1]]|last}} ms</small></i></br>
+                        {% else %}
+                        <b></b>
+                        {% endif %}
+                    </td>
+                    {% endfor %}
+                    <td>
+                        <form method="post">
+                        <button type="submit" class="btn btn-info btn-lg",
+                                name="{{slovar_total[i][2]}} del">🗑
+                        </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
         </div>
+    <div class="row pb-3">
+        <form method="post">
+        <h3>Ожидание модерации:{% for i in range(number3) %}
+
+            <small><small><a href={{non_moder[non_moder_keys[i]][1]}} style="color: #000000; text-decoration: none">
+                {{non_moder[non_moder_keys[i]][0]}}</a></small></small>
+
+                <button type="submit" class="btn btn-info btn-sm",
+                                name="{{non_moder_keys[i]}} del">🗑
+                </button>
+                <small><small>{% if i != number3 - 1 %}, {% endif %}</small></small>
+            {% endfor %}</h3>
+        </form>
+
+    </div>
+    <div class="row pb-3">
+        <form method="post">
+        <h3>Забаненные:{% for i in range(number4) %}
+            <small><small><a href={{reject[reject_keys[i]][1]}} style="color: #000000; text-decoration: none">
+                {{reject[reject_keys[i]][0]}}</a></small></small>
+            <button type="submit" class="btn btn-info btn-sm",
+                                name="{{reject_keys[i]}} del">🗑
+                </button>
+            <small><small>{% if i != number4 - 1 %}, {% endif %}</small></small>
+            {% endfor %}</h3>
+        </form>
+
     </div>
 
 {% endblock %}

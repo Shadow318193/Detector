@@ -109,7 +109,6 @@ def index():
     if request.method == "GET":
         if current_user.is_authenticated:
             name = ['название'] + db.get_requests_types() + ["удалить"]
-            name = ['название'] + db.get_requests_types() + ["удалить"]
             total = db.requests_by_user_id(current_user.id)
             total = {(x[0], x[1], n): x[-1] for n, x in total.items()}
             slovar_total = list(total.keys())
@@ -118,7 +117,7 @@ def index():
             db_sess = db_session.create_session()
             user = db_sess.query(User).filter(
                 User.id == current_user.id).first()
-            return render_template("index (1).html", current_user=current_user,
+            return render_template("index.html", current_user=current_user,
                                    user=user, total=total, name=name,
                                    slovar_total=slovar_total, number=len(name),
                                    number2=len(slovar_total),
