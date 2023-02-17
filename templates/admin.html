@@ -18,12 +18,16 @@
                             <a href={{ total[name[i]][1] }} scope="row">{{ total[name[i]][1] }}</a>
                         </th>
                         <th>
-                            <button type="submit" class="btn btn-info btn-lg"
-                                    name="{{ name[i] }} accept">Да
-                            </button>
-                            <button type="submit" class="btn btn-info btn-lg"
-                                    name="{{ name[i] }} denied">Нет
-                            </button>
+                            <div class="d-grid gap-2 d-md-block">
+                                <button type="submit"
+                                        class="btn btn-primary"
+                                        name="{{ name[i] }} accept">Да
+                                </button>
+                                <button type="submit"
+                                        class="btn btn-primary"
+                                        name="{{ name[i] }} denied">Нет
+                                </button>
+                            </div>
                         </th>
                         <th>
                             <input type="text" class="form-control" id="fname"
