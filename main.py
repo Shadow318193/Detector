@@ -295,8 +295,8 @@ def statistic_page(site_id):
     total = db.get_statistic(site_id)
     if not db.connect("""SELECT user_id, site_id FROM users_sites WHERE user_id=? AND
                                             site_id=?;""",
-                   params=(current_user.id, site_id),
-                   fetchall=True):
+                      params=(current_user.id, site_id),
+                      fetchall=True):
         abort(404)
     d = db.connect("""SELECT name, url FROM sites WHERE id=? AND
                                             is_moderated=1;""",
