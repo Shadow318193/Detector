@@ -108,7 +108,7 @@ class DB:
 
         self.connect("""
                         INSERT INTO requests(duration, status, site_id,
-                         request_type_id, time) VALUES(?, ?, ?, ?, TIME(\"now\"));
+                         request_type_id, time) VALUES(?, ?, ?, ?, TIME(\"now\", "+3 hours"));
                         """, params=(
             data["duration"], data["code"], site_id,
             req_type_id[0][0]))
@@ -212,7 +212,7 @@ class DB:
 
     def get_statistic(self, site_id):
         time_s = self.connect("""SELECT time FROM requests WHERE site_id=?
-         ORDER BY time LIMIT 1;""",
+         ORDER BY time DESC LIMIT 1;""",
                               params=(site_id,), fetchall=True)
         if not time_s:
             time_s = None
@@ -353,4 +353,4 @@ if __name__ == "__main__":
     # x = db.rejected_by_user_id(1)
     # x = db.add_syte(("https://sqliteonline.com/", "sqlite_online"), 1)
     # print(db.set_moder((5, 1)))
-    # print(db.get_statistic(2))
+    print(db.get_statistic(1))
