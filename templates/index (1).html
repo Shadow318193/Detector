@@ -34,7 +34,7 @@
                     <td>
                         <form method="post">
                         <button type="submit" class="btn btn-info btn-lg",
-                                name="{{slovar_total[i][1]}} del">Удалить
+                                name="{{slovar_total[i][2]}} del">🗑
                         </button>
                         </form>
                     </td>
@@ -44,17 +44,31 @@
             </table>
         </div>
     <div class="row pb-3">
+        <form method="post">
         <h3>Ожидание модерации:{% for i in range(number3) %}
+
             <small><small><a href={{non_moder[non_moder_keys[i]][1]}} style="color: #000000; text-decoration: none">
-                {{non_moder[non_moder_keys[i]][0]}}</a>{% if i != number3 - 1 %}, {% endif %}</small></small>
+                {{non_moder[non_moder_keys[i]][0]}}</a></small></small>
+
+                <button type="submit" class="btn btn-info btn-lg",
+                                name="{{non_moder_keys[i]}} del">🗑
+                </button>
+                <small><small>{% if i != number3 - 1 %}, {% endif %}</small></small>
             {% endfor %}</h3>
+        </form>
 
     </div>
     <div class="row pb-3">
+        <form method="post">
         <h3>Забаненные:{% for i in range(number4) %}
             <small><small><a href={{reject[reject_keys[i]][1]}} style="color: #000000; text-decoration: none">
-                {{reject[reject_keys[i]][0]}}</a>{% if i != number4 - 1 %}, {% endif %}</small></small>
+                {{reject[reject_keys[i]][0]}}</a></small></small>
+            <button type="submit" class="btn btn-info btn-lg",
+                                name="{{reject_keys[i]}} del">🗑
+                </button>
+            <small><small>{% if i != number4 - 1 %}, {% endif %}</small></small>
             {% endfor %}</h3>
+        </form>
 
     </div>
 

@@ -110,7 +110,7 @@ def index():
             name = ['название'] + db.get_requests_types() + ["удалить"]
             name = ['название'] + db.get_requests_types() + ["удалить"]
             total = db.requests_by_user_id(current_user.id)
-            total = {(x[0], x[1]): x[-1] for x in total.values()}
+            total = {(x[0], x[1], n): x[-1] for n, x in total.items()}
             slovar_total = list(total.keys())
             non_moder = db.non_moderated_by_user_id(current_user.id)
             reject = db.rejected_by_user_id(current_user.id)
@@ -123,8 +123,9 @@ def index():
                                    number3=len(non_moder), non_moder_keys=list(non_moder.keys()),
                                    number4=len(reject), reject=reject, reject_keys=list(reject.keys()))
         return redirect("/login")
+
     elif request.method == "POST":
-        site_id = db.get_id_site_by_url(" ".join(list(request.form)[0].split()[:-1]))
+        site_id = list(request.form)[0].split()[0]
         db.del_site_by_user_id(site_id, current_user.id)
         flash("Сайт удален", "success")
         return redirect("/")
@@ -270,8 +271,7 @@ def admin_page():
     elif request.method == "POST":
         new_name = request.form["fname"]
         d = list(request.form.keys())[0].split(" ")
-        url, method = " ".join(d[:-1]), d[-1]
-        id_s = db.get_id_site_by_url(url)
+        id_s, method = d[0], d[1]
         if method == "accept":
             db.set_moder((id_s, 1))
         else:
