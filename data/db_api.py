@@ -24,7 +24,7 @@ class DB:
         print(
             "Подключение к БД по адресу: " + '"' + self.directory + "/" + self.name + '"')
         if not os.path.exists(self.directory + "/" + self.name):
-            with open(self.directory + "/" + self.name, "a+"):
+            with open(self.directory + "/" + self.name, "w"):
                 pass
             self.connect("""
                 CREATE TABLE IF NOT EXISTS requests_types (
