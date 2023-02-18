@@ -271,6 +271,8 @@ def reject_moderation():
 @login_required
 def admin_page():
     if request.method == "GET":
+        if not current_user.is_admin:
+            abort(404)
         total = db.non_moderated_list()
         name = list(total.keys())
         return render_template("admin.html", number=len(name), total=total,
