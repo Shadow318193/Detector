@@ -252,18 +252,24 @@ def site_repost_page():
 @app.route("/reject_rejection", methods=["GET"])
 @login_required
 def reject_rejection():
+    if not current_user.is_admin:
+        abort(404)
     return render_template("reject_rejection.html")
 
 
 @app.route("/choice", methods=["GET"])
 @login_required
 def choice():
+    if not current_user.is_admin:
+        abort(404)
     return render_template("choice.html")
 
 
 @app.route("/reject_moderation", methods=["GET"])
 @login_required
 def reject_moderation():
+    if not current_user.is_admin:
+        abort(404)
     return render_template("reject_moderation.html")
 
 
