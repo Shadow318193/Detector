@@ -117,7 +117,7 @@ def index():
             db_sess = db_session.create_session()
             user = db_sess.query(User).filter(
                 User.id == current_user.id).first()
-            return render_template("index.html", current_user=current_user,
+            return render_template("index.html", url=slovar_total, current_user=current_user,
                                    user=user, total=total, name=name,
                                    slovar_total=slovar_total, number=len(name),
                                    number2=len(slovar_total),
@@ -127,7 +127,6 @@ def index():
                                    number4=len(reject), reject=reject,
                                    reject_keys=list(reject.keys()))
         return redirect("/login")
-
     elif request.method == "POST":
         site_id = list(request.form)[0].split()[0]
         db.del_site_by_user_id(site_id, current_user.id)
@@ -249,12 +248,22 @@ def site_repost_page():
     return render_template("site_repost.html")
 
 
-@app.route("/reject_rejection", methods=["GET"])
+@app.route("/reject_rejection", methods=["GET", "POST"])
 @login_required
 def reject_rejection():
-    if not current_user.is_admin:
-        abort(404)
-    return render_template("reject_rejection.html")
+    if request.method == "GET":
+        total = db.rejected_by_user_id(current_user.id)
+        name = list(total.keys())
+        return render_template("reject_rejection.html", reject_keys=name, number=len(name), reject=total)
+    elif request.method == "POST":
+        new_name = request.form["fname"]
+        d = list(request.form.keys())[0].split(" ")
+        id_s, method = d[0], d[1]
+        if method == "accept":
+            db.set_moder((id_s, 1))
+        db.set_name_for_site(id_s, new_name)
+        flash("Сайт обработан!", "success")
+        return redirect("/reject_rejection")
 
 
 @app.route("/choice", methods=["GET"])
@@ -265,12 +274,22 @@ def choice():
     return render_template("choice.html")
 
 
-@app.route("/reject_moderation", methods=["GET"])
+@app.route("/reject_moderation", methods=["GET", "POST"])
 @login_required
 def reject_moderation():
-    if not current_user.is_admin:
-        abort(404)
-    return render_template("reject_moderation.html")
+    if request.method == "GET":
+        total = db.requests_by_user_id(current_user.id)
+        name = list(total.keys())
+        return render_template("reject_moderation.html", reject_keys=name, number=len(name), reject=total)
+    elif request.method == "POST":
+        new_name = request.form["fname"]
+        d = list(request.form.keys())[0].split(" ")
+        id_s, method = d[0], d[1]
+        if method == "accept":
+            db.set_moder((id_s, -1))
+        db.set_name_for_site(id_s, new_name)
+        flash("Сайт обработан!", "success")
+        return redirect("/reject_moderation")
 
 
 @app.route("/admin", methods=["GET", "POST"])

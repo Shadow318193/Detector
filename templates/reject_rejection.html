@@ -1,8 +1,36 @@
 {% extends 'base.html' %}
 {% block main_content %}
 <!-- Пока пусто -->
-    <div class="d-grid gap-4 col-7 mx-auto">
-        <a href="/choice"
-           class="btn btn-secondary btn-lg">Вернуться</a>
+<div class="row pb-3">
+    <h2>Отменить отменение модерации сайтов:</h2>
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Забаненные</th>
+            <th scope="col">Отбанить</th>
+            <th scope="col">Поменять имя</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for i in range(number) %}
+        <form method="post">
+        <tr>
+            <th><a href={{ reject[reject_keys[i]][1] }} scope="row">{{ reject[reject_keys[i]][1] }}</a></th>
+            <th>
+                <button type="submit" class="btn btn-info btn-lg"
+                                name="{{ reject_keys[i] }} accept">Востановить</button>
+            </th>
+            <th>
+                <input type="text" class="form-control" id="fname" name="fname" value="{{ reject[reject_keys[i]][0] }}">
+            </th>
+
+        </tr>
+        </form>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+    <div class="text-center mb-5">
+        <a href="/choice" class="btn btn-info btn-lg">Вернуться</a>
     </div>
 {% endblock %}
