@@ -194,6 +194,26 @@ class DB:
 
         return data
 
+    def moderated_list(self):
+        d = self.connect(
+            """SELECT id, name, url FROM sites WHERE is_moderated=1;""",
+            fetchall=True)
+        data = dict()
+        for site in d:
+            data[site[0]] = [site[1], site[2]]
+
+        return data
+
+    def rejected_list(self):
+        d = self.connect(
+            """SELECT id, name, url FROM sites WHERE is_moderated=-1;""",
+            fetchall=True)
+        data = dict()
+        for site in d:
+            data[site[0]] = [site[1], site[2]]
+
+        return data
+
     def add_site(self, url_name: tuple, user_id: int):
         site_id = self.connect("""
                                 SELECT id FROM sites WHERE url=?;
@@ -346,7 +366,7 @@ class DB:
 
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
-    print(db.notification_tg())
+    print(db.sites_list())
     # db.del_site_by_user_id(4, 1)
     # print(db.non_moderated_list())
     # # db.global_init()

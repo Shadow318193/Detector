@@ -252,7 +252,9 @@ def site_repost_page():
 @login_required
 def reject_rejection():
     if request.method == "GET":
-        total = db.rejected_by_user_id(current_user.id)
+        if not current_user.is_admin:
+            abort(404)
+        total = db.rejected_list()
         name = list(total.keys())
         return render_template("reject_rejection.html", reject_keys=name, number=len(name), reject=total)
     elif request.method == "POST":
@@ -278,7 +280,9 @@ def choice():
 @login_required
 def reject_moderation():
     if request.method == "GET":
-        total = db.requests_by_user_id(current_user.id)
+        if not current_user.is_admin:
+            abort(404)
+        total = db.moderated_list()
         name = list(total.keys())
         return render_template("reject_moderation.html", reject_keys=name, number=len(name), reject=total)
     elif request.method == "POST":
