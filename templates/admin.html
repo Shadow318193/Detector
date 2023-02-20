@@ -2,6 +2,7 @@
 {% block main_content %}
     <div class="row pb-3">
         <p>Очередь на модерацию:</p>
+        <div class="table-responsive">
         <table class="table table-bordered">
             <thead class="thead-dark">
             <tr>
@@ -40,6 +41,7 @@
             {% endfor %}
             </tbody>
         </table>
+    </div>
     </div>
     <div class="d-grid gap-4 col-7 mx-auto">
         <a href="/choice"
