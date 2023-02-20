@@ -19,7 +19,7 @@
 <!--                    </a></th>-->
                     <th><a href="/statistic/{{slovar_total[i][2]}}" scope="row">
                         {{slovar_total[i][0]}}
-                    </a><a href={{url[i][1]}} class="btn btn-dark btn-sm">🔗</a></th>
+                    </a><a href={{url[i][1]}} class="btn btn-dark btn-sm"><img src="/static/media/link.png"></a></th>
                     {% for j in range(number - 2) %}
 <!--                    <td align="center">-->
                     <td>
@@ -34,7 +34,7 @@
                     <td>
                         <form method="post">
                         <button type="submit" class="btn btn-dark btn-lg",
-                                name="{{slovar_total[i][2]}} del">🗑
+                                name="{{slovar_total[i][2]}} del"><img src="/static/media/trash_can.png">
                         </button>
                         </form>
                     </td>
@@ -51,7 +51,7 @@
                 {{non_moder[non_moder_keys[i]][0]}}</a></small></small>
 
                 <button type="submit" class="btn btn-dark btn-sm",
-                                name="{{non_moder_keys[i]}} del">🗑
+                                name="{{non_moder_keys[i]}} del"><img src="/static/media/link.png">
                 </button>
                 <small><small>{% if i != number3 - 1 %}, {% endif %}</small></small>
             {% endfor %}</h3>
