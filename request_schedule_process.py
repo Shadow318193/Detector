@@ -8,7 +8,7 @@ db = DB("db", "detector2.db")
 db.global_init()
 # print("generate_ok")
 
-schedule.every(30).seconds.do(tester.push_data, db=db)
+schedule.every(300).seconds.do(tester.push_data, db=db)
 
 while True:
     schedule.run_pending()

@@ -1,4 +1,5 @@
 from tester.test1 import AvailableTester
+from tester.test2 import CheckHostParser
 from data.db_api import DB
 
 db = DB("../db", "detector2.db")
@@ -6,7 +7,8 @@ db = DB("../db", "detector2.db")
 
 class Parser:
     parsers = [
-        AvailableTester()
+        # AvailableTester()
+        CheckHostParser()
     ]
 
     def push_data(self, db) -> None:
