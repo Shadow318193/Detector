@@ -67,7 +67,7 @@ class AvailableTester:
         return "AvailableTester"
 
 
-x = AvailableTester()
-x1 = x.get_data(["google.com", "instagram.com"])
-for i in x1:
-    print(i)
+# x = AvailableTester()
+# x1 = x.get_data(["google.com", "instagram.com"])
+# for i in x1:
+#     print(i)
