@@ -319,7 +319,7 @@ def admin_page():
         return redirect("/")
 
 
-@app.route("/statistic/<int:site_id>", methods=["GET"])
+@app.route("/statistic/<int:site_id>", methods=["GET", "POST"])
 @login_required
 def statistic_page(site_id):
     total = db.get_statistic(site_id)
@@ -338,7 +338,16 @@ def statistic_page(site_id):
     if not d:
         abort(404)
     name_site, url_site = d[0]
-    return render_template("report.html", total=total, url=url_site,
+    if request.method == "GET":
+        return render_template("report.html", total=total, url=url_site,
+                           name=name_site)
+    if request.method == "POST":
+        d = list(request.form.keys())
+        if d == ['feedback']:
+            return render_template("report.html", total=total, url=url_site,
+                           name=name_site)
+        if d == ['rating']:
+            return render_template("report.html", total=total, url=url_site,
                            name=name_site)
 
 
