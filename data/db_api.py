@@ -325,42 +325,41 @@ class DB:
             """DELETE FROM users_sites WHERE site_id=? AND user_id=?""",
             params=(site_id, user_id,), fetchall=True)
 
-    def notification_tg(self):
+    def notification(self):
         requests_types = self.connect(
-            """SELECT id, type FROM requests_types;""",
-            fetchall=True)
-        d = self.connect("""SELECT site_id, tg_id, email FROM users_sites WHERE tg_id
-         NOT NULL OR email NOT NULL""", fetchall=True)
+            """SELECT id, type FROM requests_types;""", fetchall=True)
+        response_data = self.connect(
+            """SELECT site_id, tg_id, email FROM users_sites 
+               WHERE tg_id NOT NULL OR email NOT NULL""", fetchall=True)
         data = list()
-        for el in d:
+        for el in response_data:
             tg_id = el[1]
             email = el[2]
-            d = self.connect("""SELECT name, url FROM sites WHERE id=? AND
-                                            is_moderated=1;""",
-                             params=(el[0],),
-                             fetchall=True)
-            if not d:
+            response = self.connect(
+                """SELECT name, url FROM sites 
+                WHERE id=? AND is_moderated=1;""",
+                params=(el[0],), fetchall=True)
+            if not response:
                 continue
-            name_site, url_site = d[0]
+            name_site, url_site = response[0]
             for requests_t in requests_types:
-                o = self.connect("""SELECT status, duration, id FROM requests WHERE site_id=? AND
-                                 request_type_id=? ORDER BY time DESC LIMIT 2;""",
-                                 fetchall=True,
-                                 params=(el[0], requests_t[0],))
-                if len(o) < 2:
+                rsp = self.connect(
+                    """SELECT status, duration, id FROM requests 
+                    WHERE site_id=? AND request_type_id=? 
+                    ORDER BY time DESC LIMIT 2;""",
+                    fetchall=True, params=(el[0], requests_t[0],))
+                if len(rsp) < 2:
                     continue
                 # проверка актуальности данных
-                if o[1][0] < 0:
+                if rsp[1][0] < 0:
                     continue
-                if o[0][0] != o[1][0] or o[0][1] / o[1][1] >= 2:
+                if rsp[0][0] != rsp[1][0] or rsp[0][1] / rsp[1][1] >= 2:
                     self.connect("""UPDATE requests SET status=? WHERE id=?""",
-                                 params=(-1 * o[1][0], o[1][2]))
-                    d = (
-                        tg_id, email, [name_site, url_site],
-                        [o[1][0], o[0][0]],
-                        [o[1][1], o[0][1]])
-                    data.append(d)
-
+                                 params=(-1 * rsp[1][0], rsp[1][2]))
+                    tpl = (tg_id, email, [name_site, url_site],
+                           [rsp[1][0], rsp[0][0]],
+                           [rsp[1][1], rsp[0][1]])
+                    data.append(tpl)
         return data
 
 
