@@ -13,6 +13,13 @@ class AvailableTester:
     def get_data(self, urls: list) -> list:
         data = []
         for url in urls:
+            https_proxy = "89.232.123.2:3128"
+            http_proxy = "89.43.10.141:80"
+
+            proxies = {
+                "http": http_proxy,
+                "https": https_proxy,
+            }
             cookies = {
                 'dfjoCvIgkbblF5DJfa551AokP0o': 'igDggjMBG197PLliVZWgCW-B7R0',
                 'LOW433wcIwWHRSdBwilP9srZ5Do': '1677254738',
@@ -40,7 +47,8 @@ class AvailableTester:
             }
 
             signature = requests.get('https://2ip.ru/site-availability/',
-                                    cookies=cookies, headers=headers).text
+                                    cookies=cookies, headers=headers,
+                                     proxies=proxies).text
             signature = signature.split("var services = [")[1].split("{")[1][:-6]. \
                 replace("\n", "").replace("\t", " ").replace("     ", ""). \
                 split("\'")[1].split("\'")[0].split("/?")[1]
@@ -67,7 +75,7 @@ class AvailableTester:
         return "AvailableTester"
 
 
-# x = AvailableTester()
-# x1 = x.get_data(["google.com", "instagram.com"])
-# for i in x1:
-#     print(i)
+x = AvailableTester()
+x1 = x.get_data(["google.com", "instagram.com"])
+for i in x1:
+    print(i)
