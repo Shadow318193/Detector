@@ -9,6 +9,7 @@
             <thead class="thead-dark">
             <tr>
                 <th scope="col">Забаненные</th>
+                <th scope="col">id_отзывов</th>
                 <th scope="col">Разбанить</th>
                 <th scope="col">Поменять название</th>
             </tr>
@@ -19,6 +20,10 @@
                     <tr>
                         <th>
                             <a href={{ reject[reject_keys[i]][1] }} scope="row">{{ reject[reject_keys[i]][1] }}</a>
+                        </th>
+                        <th>
+                            <input type="text" class="form-control" id="id_rating"
+                                   name="id_rating">
                         </th>
                         <th>
                             <button type="submit"

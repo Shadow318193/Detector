@@ -259,7 +259,8 @@ def reject_rejection():
         return render_template("reject_rejection.html", reject_keys=name, number=len(name), reject=total)
     elif request.method == "POST":
         new_name = request.form["fname"]
-        d = list(request.form.keys())[0].split(" ")
+        id_rating = request.form["id_rating"]
+        d = list(request.form.keys())[1].split(" ")
         id_s, method = d[0], d[1]
         if method == "accept":
             db.set_moder((id_s, 1))
@@ -287,7 +288,8 @@ def reject_moderation():
         return render_template("reject_moderation.html", reject_keys=name, number=len(name), reject=total)
     elif request.method == "POST":
         new_name = request.form["fname"]
-        d = list(request.form.keys())[0].split(" ")
+        id_rating = request.form["id_rating"]
+        d = list(request.form.keys())[1].split(" ")
         id_s, method = d[0], d[1]
         if method == "accept":
             db.set_moder((id_s, -1))
@@ -308,7 +310,8 @@ def admin_page():
                                name=name)
     elif request.method == "POST":
         new_name = request.form["fname"]
-        d = list(request.form.keys())[0].split(" ")
+        id_rating = request.form["id_rating"]
+        d = list(request.form.keys())[1].split(" ")
         id_s, method = d[0], d[1]
         if method == "accept":
             db.set_moder((id_s, 1))

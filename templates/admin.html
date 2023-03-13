@@ -7,6 +7,7 @@
             <thead class="thead-dark">
             <tr>
                 <th scope="col">Ссылка на сайт</th>
+                <th scope="col">id_отзывов</th>
                 <th scope="col">Принять</th>
                 <th scope="col">Поменять название</th>
             </tr>
@@ -17,6 +18,9 @@
                     <tr>
                         <th>
                             <a href={{ total[name[i]][1] }} scope="row">{{ total[name[i]][1] }}</a>
+                        </th>
+                        <th>
+                        <input class="form-control" type="text" name="id_rating" id="id_rating">
                         </th>
                         <th>
                             <div class="d-grid gap-2 d-md-block">
