@@ -46,7 +46,9 @@ class DB:
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name VARCHAR DEFAULT "unnamed",
                 url VARCHAR,
-                is_moderated SMALLINT DEFAULT 0
+                is_moderated SMALLINT DEFAULT 0,
+                id_rating VARCHAR DEFAULT NULL,
+                count_users INTEGER DEFAULT 0
             );""")
             self.connect("""
             CREATE TABLE IF NOT EXISTS users_sites (
@@ -68,6 +70,12 @@ class DB:
                 is_outdated BOOL DEFAULT FALSE,
                 FOREIGN KEY(site_id) REFERENCES sites (id), 
                 FOREIGN KEY(request_type_id) REFERENCES requests_types (id)
+            );""")
+            self.connect("""CREATE TABLE IF NOT EXISTS rating (
+            site_id INTEGER,
+            rating REAL,
+            last_time DATETIME,
+            FOREIGN KEY(site_id) REFERENCES sites (id)
             );""")
             self.connect(
                 "INSERT INTO users(email, name, surname, hashed_password, is_admin)"
@@ -225,6 +233,9 @@ class DB:
         site_id = site_id[0][0]
         self.connect("""INSERT INTO users_sites (user_id, site_id)
          VALUES(?, ?);""", params=(user_id, site_id,))
+        self.connect(
+            """UPDATE sites SET count_users=count_users+1 WHERE id=?;""",
+            params=(site_id,))
 
     def set_moder(self, id_state: tuple):
         id_s = self.connect(
@@ -270,7 +281,7 @@ class DB:
     def get_popular(self):
         data = dict()
         ids = self.connect(
-            """SELECT id, name, url from sites WHERE is_moderated=1 ORDER BY id LIMIT 3""",
+            """SELECT id, name, url from sites WHERE is_moderated=1 ORDER BY count_users DESC, id LIMIT 3""",
             fetchall=True)
         requests_types = self.connect(
             """SELECT id, type FROM requests_types;""",
@@ -324,48 +335,67 @@ class DB:
         self.connect(
             """DELETE FROM users_sites WHERE site_id=? AND user_id=?""",
             params=(site_id, user_id,), fetchall=True)
+        self.connect(
+            """UPDATE sites SET count_users=count_users-1 WHERE id=?;""",
+            params=(site_id,))
 
-    def notification(self):
+    def notification_tg(self):
         requests_types = self.connect(
-            """SELECT id, type FROM requests_types;""", fetchall=True)
-        response_data = self.connect(
-            """SELECT site_id, tg_id, email FROM users_sites 
-               WHERE tg_id NOT NULL OR email NOT NULL""", fetchall=True)
+            """SELECT id, type FROM requests_types;""",
+            fetchall=True)
+        d = self.connect("""SELECT site_id, tg_id, email FROM users_sites WHERE tg_id
+         NOT NULL OR email NOT NULL""", fetchall=True)
         data = list()
-        for el in response_data:
+        for el in d:
             tg_id = el[1]
             email = el[2]
-            response = self.connect(
-                """SELECT name, url FROM sites 
-                WHERE id=? AND is_moderated=1;""",
-                params=(el[0],), fetchall=True)
-            if not response:
+            d = self.connect("""SELECT name, url FROM sites WHERE id=? AND
+                                            is_moderated=1;""",
+                             params=(el[0],),
+                             fetchall=True)
+            if not d:
                 continue
-            name_site, url_site = response[0]
+            name_site, url_site = d[0]
             for requests_t in requests_types:
-                rsp = self.connect(
-                    """SELECT status, duration, id FROM requests 
-                    WHERE site_id=? AND request_type_id=? 
-                    ORDER BY time DESC LIMIT 2;""",
-                    fetchall=True, params=(el[0], requests_t[0],))
-                if len(rsp) < 2:
+                o = self.connect("""SELECT status, duration, id FROM requests WHERE site_id=? AND
+                                 request_type_id=? ORDER BY time DESC LIMIT 2;""",
+                                 fetchall=True,
+                                 params=(el[0], requests_t[0],))
+                if len(o) < 2:
                     continue
                 # проверка актуальности данных
-                if rsp[1][0] < 0:
+                if o[1][0] < 0:
                     continue
-                if rsp[0][0] != rsp[1][0] or rsp[0][1] / rsp[1][1] >= 2:
+                if o[0][0] != o[1][0] or o[0][1] / o[1][1] >= 2:
                     self.connect("""UPDATE requests SET status=? WHERE id=?""",
-                                 params=(-1 * rsp[1][0], rsp[1][2]))
-                    tpl = (tg_id, email, [name_site, url_site],
-                           [rsp[1][0], rsp[0][0]],
-                           [rsp[1][1], rsp[0][1]])
-                    data.append(tpl)
+                                 params=(-1 * o[1][0], o[1][2]))
+                    d = (
+                        tg_id, email, [name_site, url_site],
+                        [o[1][0], o[0][0]],
+                        [o[1][1], o[0][1]])
+                    data.append(d)
+
         return data
+
+    def get_need_rating(self):
+        ids = self.connect("""SELECT site_id FROM rating WHERE
+        ROUND((JULIANDAY("now", "+3 hours") - JULIANDAY(last_time)) * 86400) >
+         3600;""",
+                           fetchall=True)
+        rating_ids = set(i[0][0] for i in [
+            self.connect("""SELECT id_rating FROM sites WHERE id=?""",
+                         params=(x[0],), fetchall=True) for x in ids])
+        for x in self.connect(
+                """SELECT id_rating FROM sites WHERE id_rating IS NOT NULL;""",
+                fetchall=True):
+            rating_ids.add(x[0])
+        return rating_ids
 
 
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
-    print(db.sites_list())
+    db.global_init()
+    print(db.get_need_rating())
     # db.del_site_by_user_id(4, 1)
     # print(db.non_moderated_list())
     # # db.global_init()
@@ -381,4 +411,4 @@ if __name__ == "__main__":
     # x = db.rejected_by_user_id(1)
     # x = db.add_syte(("https://sqliteonline.com/", "sqlite_online"), 1)
     # print(db.set_moder((5, 1)))
-    print(db.get_statistic(1))
+    # print(db.get_statistic(1))
