@@ -385,14 +385,30 @@ class DB:
         ROUND((JULIANDAY("now", "+3 hours") - JULIANDAY(last_time)) * 86400) >
          3600;""",
                            fetchall=True)
-        rating_ids = set(i[0][0] for i in [
-            self.connect("""SELECT id_rating FROM sites WHERE id=?""",
+        rating_ids = set(i[0] for i in [
+            self.connect("""SELECT id_rating, id FROM sites WHERE id=?""",
                          params=(x[0],), fetchall=True) for x in ids])
         for x in self.connect(
-                """SELECT id_rating FROM sites WHERE id_rating IS NOT NULL;""",
+                """SELECT id_rating, id FROM sites WHERE id_rating IS NOT NULL;""",
                 fetchall=True):
-            rating_ids.add(x[0])
-        return rating_ids
+            rating_ids.add(x)
+        return list(rating_ids)
+
+    def set_rating(self, data):
+        for out in data:
+            rate = (out["site_id"], out["rating"])
+            if self.connect("""SELECT * FROM rating WHERE site_id=?""",
+                            params=(rate[1]), fetchall=True):
+                self.connect("""UPDATE rating SET rating=?,
+                 last_time=TIME(\"now\", "+3 hours") WHERE site_id=?""",
+                             params=rate)
+
+            else:
+                self.connect("""INSERT INTO rating VALUES(?, ?,
+                 TIME(\"now\", "+3 hours"));""", params=rate)
+
+
+
 
 
 if __name__ == "__main__":

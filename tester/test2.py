@@ -1,9 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 import time
+from interface import AvailableParser
 
 
-class CheckHostParser:
+class CheckHostParser(AvailableParser):
     def get_data(self, urls: list) -> list:
         data_out = []
         methods = {"ru3.node.check-host.net": "RU request",

@@ -1,7 +1,8 @@
 import requests
+from interface import AvailableParser
 
 
-class AvailableTester:
+class AvailableTester(AvailableParser):
     urls_to_parse = {"USA": "https://uk.2ipx.com:8888",
                      "UK": "https://uk.2ipx.com:8888",
                      "DE": "https://de.2ipx.com:8888",
@@ -75,8 +76,7 @@ class AvailableTester:
         return "AvailableTester"
 
 
-# if __name__ == "__main__":
-#     x = AvailableTester()
-#     x1 = x.get_data(["google.com", "instagram.com"])
-#     for i in x1:
-#         print(i)
+# x = AvailableTester()
+# x1 = x.get_data(["google.com", "instagram.com"])
+# for i in x1:
+#     print(i)
