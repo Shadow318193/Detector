@@ -339,7 +339,7 @@ class DB:
             """UPDATE sites SET count_users=count_users-1 WHERE id=?;""",
             params=(site_id,))
 
-    def notification_tg(self):
+    def notification(self):
         requests_types = self.connect(
             """SELECT id, type FROM requests_types;""",
             fetchall=True)
@@ -377,7 +377,6 @@ class DB:
                         [prev_status_code, curr_status_code],
                         [prev_duration, curr_duration])
                     data.append(d)
-
         return data
 
     def get_need_rating(self):
@@ -414,7 +413,7 @@ class DB:
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
     db.global_init()
-    print(db.notification_tg())
+    print(db.notification())
     # db.del_site_by_user_id(4, 1)
     # print(db.non_moderated_list())
     # # db.global_init()
