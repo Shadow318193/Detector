@@ -89,9 +89,9 @@ class DB:
                 self.connect("INSERT INTO requests_types (type) VALUES(?)",
                              params=(i,))
             lst = [("https://proton.mskobr.ru/",
-                    "Образовательный центр «Протон»"),
+                    "Образовательный центр «Протон»", None),
                    ("https://www.msu.ru/",
-                    "Московский государственный университет имени М.В.Ломоносова"),
+                    "Московский государственный университет имени М.В.Ломоносова", ),
                    ("https://mipt.ru/",
                     "Московский физико-технический институт")]
             for i in lst:
@@ -194,31 +194,31 @@ class DB:
 
     def non_moderated_list(self):
         d = self.connect(
-            """SELECT id, name, url FROM sites WHERE is_moderated=0;""",
+            """SELECT id, name, url, id_rating FROM sites WHERE is_moderated=0;""",
             fetchall=True)
         data = dict()
         for site in d:
-            data[site[0]] = [site[1], site[2]]
+            data[site[0]] = [site[1], site[2], site[3] if site[3] else ""]
 
         return data
 
     def moderated_list(self):
         d = self.connect(
-            """SELECT id, name, url FROM sites WHERE is_moderated=1;""",
+            """SELECT id, name, url, id_rating FROM sites WHERE is_moderated=1;""",
             fetchall=True)
         data = dict()
         for site in d:
-            data[site[0]] = [site[1], site[2]]
+            data[site[0]] = [site[1], site[2], site[3] if site[3] else ""]
 
         return data
 
     def rejected_list(self):
         d = self.connect(
-            """SELECT id, name, url FROM sites WHERE is_moderated=-1;""",
+            """SELECT id, name, url, id_rating FROM sites WHERE is_moderated=-1;""",
             fetchall=True)
         data = dict()
         for site in d:
-            data[site[0]] = [site[1], site[2]]
+            data[site[0]] = [site[1], site[2], site[3] if site[3] else ""]
 
         return data
 
@@ -395,9 +395,10 @@ class DB:
 
     def set_rating(self, data):
         for out in data:
+            # print(out)
             rate = (out["site_id"], out["rating"])
-            if self.connect("""SELECT * FROM rating WHERE site_id=?""",
-                            params=(rate[1]), fetchall=True):
+            if self.connect("""SELECT * FROM rating WHERE site_id=?;""",
+                            params=(rate[0], ), fetchall=True):
                 self.connect("""UPDATE rating SET rating=?,
                  last_time=TIME(\"now\", "+3 hours") WHERE site_id=?""",
                              params=rate)
@@ -406,8 +407,14 @@ class DB:
                 self.connect("""INSERT INTO rating VALUES(?, ?,
                  TIME(\"now\", "+3 hours"));""", params=rate)
 
-
-
+    def set_id_rating(self, id_rating, site_id):
+        id_s = self.connect(
+            """UPDATE sites SET id_rating=? WHERE id=? RETURNING id;""",
+            params=(id_rating, site_id, ), fetchall=True)
+        if not id_s:
+            return -1
+        else:
+            return 0
 
 
 if __name__ == "__main__":
