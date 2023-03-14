@@ -262,6 +262,7 @@ def reject_rejection():
         id_rating = request.form["id_rating"]
         d = list(request.form.keys())[1].split(" ")
         id_s, method = d[0], d[1]
+        db.set_id_rating(id_rating, id_s)
         if method == "accept":
             db.set_moder((id_s, 1))
         db.set_name_for_site(id_s, new_name)
@@ -291,6 +292,7 @@ def reject_moderation():
         id_rating = request.form["id_rating"]
         d = list(request.form.keys())[1].split(" ")
         id_s, method = d[0], d[1]
+        db.set_id_rating(id_rating, id_s)
         if method == "accept":
             db.set_moder((id_s, -1))
         db.set_name_for_site(id_s, new_name)
@@ -313,6 +315,7 @@ def admin_page():
         id_rating = request.form["id_rating"]
         d = list(request.form.keys())[1].split(" ")
         id_s, method = d[0], d[1]
+        db.set_id_rating(id_rating, id_s)
         if method == "accept":
             db.set_moder((id_s, 1))
         else:

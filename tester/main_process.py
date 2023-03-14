@@ -2,7 +2,7 @@ from tester.test1 import AvailableTester
 from tester.test2 import CheckHostParser
 from tester.rating import UchebaParser
 from data.db_api import DB
-from tester.interface import AvailableParser, RatingParser
+from interface import AvailableParser, RatingParser
 
 db = DB("../db", "detector2.db")
 
@@ -25,7 +25,6 @@ class Parser:
                     db.add_request(country)
             elif isinstance(parser, RatingParser):
                 response = parser.get_data(ids)
-                print(response)
                 db.set_rating(response)
 
 
