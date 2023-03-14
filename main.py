@@ -278,6 +278,15 @@ def choice():
     return render_template("choice.html")
 
 
+@app.route("/reviews", methods=["GET", "POST"])
+def reviews():
+    if request.method == "GET":
+        return render_template("reviews.html")
+    elif request.method == "POST":
+        comment = request.form["comment"]
+        return render_template("reviews.html")
+
+
 @app.route("/reject_moderation", methods=["GET", "POST"])
 @login_required
 def reject_moderation():
