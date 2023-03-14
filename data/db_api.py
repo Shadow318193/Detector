@@ -3,8 +3,8 @@ import os
 
 
 class DB:
-    def __init__(self, dirertory, db_name):
-        self.directory = dirertory
+    def __init__(self, directory, db_name):
+        self.directory = directory
         self.name = db_name
 
     def connect(self, text_for_execute: str, fetchall: bool = False,
