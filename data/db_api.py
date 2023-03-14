@@ -361,18 +361,21 @@ class DB:
                                  request_type_id=? ORDER BY time DESC LIMIT 2;""",
                                  fetchall=True,
                                  params=(el[0], requests_t[0],))
+                prev_status_code, curr_status_code = o[1][0], o[0][0]
+                prev_duration, curr_duration = o[1][1], o[0][1]
                 if len(o) < 2:
                     continue
                 # проверка актуальности данных
-                if o[1][0] < 0:
+                if prev_status_code < 0:
                     continue
-                if o[0][0] != o[1][0] or o[0][1] / o[1][1] >= 2:
+                if (curr_status_code != prev_status_code or
+                        curr_duration / prev_duration >= 5):
                     self.connect("""UPDATE requests SET status=? WHERE id=?""",
-                                 params=(-1 * o[1][0], o[1][2]))
+                                 params=(-1 * prev_status_code, o[1][2]))
                     d = (
                         tg_id, email, [name_site, url_site],
-                        [o[1][0], o[0][0]],
-                        [o[1][1], o[0][1]])
+                        [prev_status_code, curr_status_code],
+                        [prev_duration, curr_duration])
                     data.append(d)
 
         return data
@@ -395,7 +398,7 @@ class DB:
 if __name__ == "__main__":
     db = DB("../db", "detector2.db")
     db.global_init()
-    print(db.get_need_rating())
+    print(db.notification_tg())
     # db.del_site_by_user_id(4, 1)
     # print(db.non_moderated_list())
     # # db.global_init()

@@ -44,7 +44,8 @@ class CheckHostParser:
         return "AvailableTester"
 
 
-# x = CheckHostParser()
-# x1 = x.get_data(["proton.mskobr.ru"])
-# for i in x1:
-#     print(i)
+# if __name__ == "__main__":
+#     x = CheckHostParser()
+#     x1 = x.get_data(["proton.mskobr.ru"])
+#     for i in x1:
+#         print(i)

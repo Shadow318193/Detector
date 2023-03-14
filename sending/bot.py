@@ -41,5 +41,6 @@ class SenderBot:
                                       f"{dest_post_address}"))
 
 
-# b = SenderBot()
-# b.send_to_mail("test@yandex.ru", "test_message")
+# if __name__ == "__main__":
+#     b = SenderBot()
+#     b.send_to_mail("test@yandex.ru", "test_message")

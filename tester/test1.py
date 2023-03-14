@@ -75,7 +75,8 @@ class AvailableTester:
         return "AvailableTester"
 
 
-x = AvailableTester()
-x1 = x.get_data(["google.com", "instagram.com"])
-for i in x1:
-    print(i)
+# if __name__ == "__main__":
+#     x = AvailableTester()
+#     x1 = x.get_data(["google.com", "instagram.com"])
+#     for i in x1:
+#         print(i)
