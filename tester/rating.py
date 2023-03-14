@@ -20,8 +20,14 @@ class UchebaParser(RatingParser):
             )
         return data
 
+    @staticmethod
+    def search(execute: str):
+        html = requests.get(f"https://www.ucheba.ru/json/search/suggestion?"
+                     f"q={execute}&t[]=1&t[]=2").json()
+        data = [[x["id"].split(":")[1], x["optiontext"]] for x in html["list"]]
+        return data
 
 if __name__ == "__main__":
-    obj = UchebaParser()
-    x = obj.get_data([('1153', 3), ('5723', 2)])
-    print(x)
+    # obj = UchebaParser()
+    # x = obj.get_data([('1153', 3), ('5723', 2)])
+    print(UchebaParser.search("МГУ"))
