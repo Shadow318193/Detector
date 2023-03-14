@@ -1,10 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 import json
-from interface import RatingParser
+from tester.interface import RatingParser
 
 
 class UchebaParser(RatingParser):
+    @staticmethod
     def get_data(self, ids: list):
         data = []
         for id_v in ids:
@@ -18,7 +19,6 @@ class UchebaParser(RatingParser):
             }
             )
         return data
-
 
 
 if __name__ == "__main__":

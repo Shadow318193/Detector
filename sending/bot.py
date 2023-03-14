@@ -2,7 +2,7 @@ import socket
 import telebot
 import smtplib
 from email.message import EmailMessage
-from botconfig import TOKEN, POST_PASSWORD
+from .botconfig import TOKEN, POST_PASSWORD
 from data.db_api import DB
 
 
@@ -52,22 +52,20 @@ class SenderBot:
             prev_status_code, curr_status_code = ntf[3][0], ntf[3][1]
             prev_duration, curr_duration = ntf[4][0], ntf[4][1]
             if prev_status_code != curr_status_code:
-                msg = f"""
-                Изменение в статус-коде сайта {site} ({site_url}).\n
-                Предыдущий": {prev_status_code}\n
-                Текущий:     {curr_status_code}\n
-                Предыдущее время ответа сайта: {prev_duration}\n
-                Текущее время ответа сайта:    {curr_duration}\n
-                """
+                msg = f"Изменение в статус-коде сайта {site}\n" \
+                      f"({site_url})\n" \
+                      f"Предыдущий: {prev_status_code}\n" \
+                      f"Текущий: {curr_status_code}\n" \
+                      f"Предыдущее время ответа сайта: {prev_duration}\n" \
+                      f"Текущее время ответа сайта: {curr_duration}"
                 if email:
                     self.send_to_email(email, msg)
             else:
-                msg = f"""
-                Изменение во времени ответа сайта {site} ({site_url}).\n
-                Статус код": {prev_status_code}\n
-                Предыдущее время ответа сайта: {prev_duration}\n
-                Текущее время ответа сайта:    {curr_duration}\n
-                """
+                msg = f"Изменение во времени ответа сайта {site}\n" \
+                      f"({site_url})\n" \
+                      f"Статус код: {prev_status_code}\n" \
+                      f"Предыдущее время ответа сайта: {prev_duration}\n" \
+                      f"Текущее время ответа сайта: {curr_duration}"
             if tg_id:
                 self.send_to_telegram(tg_id, msg)
 

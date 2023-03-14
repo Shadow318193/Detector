@@ -1,5 +1,5 @@
 import requests
-from interface import AvailableParser
+from tester.interface import AvailableParser
 
 
 class AvailableTester(AvailableParser):
