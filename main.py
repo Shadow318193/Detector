@@ -284,7 +284,15 @@ def reviews():
         return render_template("reviews.html")
     elif request.method == "POST":
         comment = request.form["comment"]
-        return render_template("reviews.html")
+        return redirect("/table_rating")
+
+from tester.rating import UchebaParser
+
+@app.route("/table_rating", methods=["GET"])
+def table_rating():
+    data = UchebaParser.search("МГУ")
+    return render_template("table_rating.html", data=data)
+
 
 
 @app.route("/reject_moderation", methods=["GET", "POST"])
