@@ -2,7 +2,7 @@ from tester.test1 import AvailableTester
 from tester.test2 import CheckHostParser
 from tester.rating import UchebaParser
 from data.db_api import DB
-from interface import AvailableParser, RatingParser
+from tester.interface import AvailableParser, RatingParser
 
 db = DB("../db", "detector2.db")
 
@@ -16,6 +16,7 @@ class Parser:
 
     def push_data(self, db) -> None:
         """Commiting requests to DB"""
+        print("Проход")
         urls = db.sites_list()
         ids = db.get_need_rating()
         for parser in self.parsers:
@@ -28,5 +29,5 @@ class Parser:
                 db.set_rating(response)
 
 
-p = Parser()
-p.push_data(db)
+# p = Parser()
+# p.push_data(db)

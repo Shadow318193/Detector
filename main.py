@@ -12,6 +12,8 @@ import datetime
 import logging
 import os
 
+from tester.rating import UchebaParser
+
 AVATAR_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_PIC_TYPES = ["png", "jpg", "jpeg", "gif"]
 MEDIA_VID_TYPES = ["webm", "mp4"]
@@ -284,15 +286,8 @@ def reviews():
         return render_template("reviews.html")
     elif request.method == "POST":
         comment = request.form["comment"]
-        return redirect("/table_rating")
-
-from tester.rating import UchebaParser
-
-@app.route("/table_rating", methods=["GET"])
-def table_rating():
-    data = UchebaParser.search("МГУ")
-    return render_template("table_rating.html", data=data)
-
+        data = UchebaParser.search(comment  )
+        return render_template("table_rating.html", data=data)
 
 
 @app.route("/reject_moderation", methods=["GET", "POST"])
@@ -354,13 +349,17 @@ def statistic_page(site_id):
                       params=(current_user.id, site_id),
                       fetchall=True) and (site_id, ) not in popular:
         abort(404)
-    d = db.connect("""SELECT name, url FROM sites WHERE id=? AND
+    d = db.connect("""SELECT name, url, id_rating FROM sites WHERE id=? AND
                                             is_moderated=1;""",
                    params=(site_id,),
                    fetchall=True)
     if not d:
         abort(404)
-    name_site, url_site = d[0]
+    name_site, url_site, rate_id = d[0]
+    rate = db.connect("""SELECT rating FROM rating
+     WHERE site_id=?""", params=(rate_id, ),
+                      fetchall=True)[0]
+    print(rate)
     if request.method == "GET":
         return render_template("report.html", total=total, url=url_site,
                            name=name_site)

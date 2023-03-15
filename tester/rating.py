@@ -5,7 +5,6 @@ from tester.interface import RatingParser
 
 
 class UchebaParser(RatingParser):
-    @staticmethod
     def get_data(self, ids: list):
         data = []
         for id_v in ids:
@@ -30,4 +29,4 @@ class UchebaParser(RatingParser):
 if __name__ == "__main__":
     # obj = UchebaParser()
     # x = obj.get_data([('1153', 3), ('5723', 2)])
-    print(UchebaParser.search("МГУ"))
+    print(UchebaParser.search("МФТИ"))

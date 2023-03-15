@@ -91,12 +91,13 @@ class DB:
             lst = [("https://proton.mskobr.ru/",
                     "Образовательный центр «Протон»", None),
                    ("https://www.msu.ru/",
-                    "Московский государственный университет имени М.В.Ломоносова", ),
+                    "Московский государственный университет имени М.В.Ломоносова", "1153"),
                    ("https://mipt.ru/",
-                    "Московский физико-технический институт")]
+                    "Московский физико-технический институт", "5923")]
             for i in lst:
                 site_id = self.connect(
-                    """INSERT INTO sites(url, name, is_moderated) VALUES(?, ?, 1)
+                    """INSERT INTO sites(url, name, is_moderated, id_rating)
+                     VALUES(?, ?, 1, ?)
                  RETURNING id;""",
                     fetchall=True, params=i)
 
@@ -408,6 +409,8 @@ class DB:
                  TIME(\"now\", "+3 hours"));""", params=rate)
 
     def set_id_rating(self, id_rating, site_id):
+        if not id_rating:
+            return -2
         id_s = self.connect(
             """UPDATE sites SET id_rating=? WHERE id=? RETURNING id;""",
             params=(id_rating, site_id, ), fetchall=True)
