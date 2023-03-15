@@ -11,7 +11,7 @@ class UchebaParser(RatingParser):
             html = requests.get(f"https://www.ucheba.ru/uz/{str(id_v[0])}").text
             soup = BeautifulSoup(html, "html.parser")
             json_data = json.loads(soup.find("script", type="application/ld+json").text)
-            rate = json_data["aggregateRating"]["ratingValue"]
+            rate = json_data.get("aggregateRating", {"ratingValue": None})["ratingValue"]
             data.append({
                 "site_id": id_v[1],
                 "rating": rate,
@@ -22,7 +22,7 @@ class UchebaParser(RatingParser):
     @staticmethod
     def search(execute: str):
         html = requests.get(f"https://www.ucheba.ru/json/search/suggestion?"
-                     f"q={execute}&t[]=1&t[]=2").json()
+                     f"q={execute}").json()
         data = [[x["id"].split(":")[1], x["optiontext"]] for x in html["list"]]
         return data
 

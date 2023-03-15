@@ -349,7 +349,7 @@ def statistic_page(site_id):
                       params=(current_user.id, site_id),
                       fetchall=True) and (site_id, ) not in popular:
         abort(404)
-    d = db.connect("""SELECT name, url, id_rating FROM sites WHERE id=? AND
+    d = db.connect("""SELECT name, url, id FROM sites WHERE id=? AND
                                             is_moderated=1;""",
                    params=(site_id,),
                    fetchall=True)
@@ -358,11 +358,11 @@ def statistic_page(site_id):
     name_site, url_site, rate_id = d[0]
     rate = db.connect("""SELECT rating FROM rating
      WHERE site_id=?""", params=(rate_id, ),
-                      fetchall=True)[0]
-    print(rate)
+                      fetchall=True)
+    rate = rate[0][0] if rate else None
     if request.method == "GET":
         return render_template("report.html", total=total, url=url_site,
-                           name=name_site)
+                           name=name_site, rate=rate)
     if request.method == "POST":
         d = list(request.form.keys())
         if d == ['feedback']:

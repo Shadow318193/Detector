@@ -89,7 +89,7 @@ class DB:
                 self.connect("INSERT INTO requests_types (type) VALUES(?)",
                              params=(i,))
             lst = [("https://proton.mskobr.ru/",
-                    "Образовательный центр «Протон»", None),
+                    "Образовательный центр «Протон»", "2195"),
                    ("https://www.msu.ru/",
                     "Московский государственный университет имени М.В.Ломоносова", "1153"),
                    ("https://mipt.ru/",
@@ -391,7 +391,10 @@ class DB:
         for x in self.connect(
                 """SELECT id_rating, id FROM sites WHERE id_rating IS NOT NULL;""",
                 fetchall=True):
-            rating_ids.add(x)
+            if not self.connect("""SELECT * FROM rating WHERE site_id=?;""",
+                                params=(x[1], ),
+                                fetchall=True):
+                rating_ids.add(x)
         return list(rating_ids)
 
     def set_rating(self, data):

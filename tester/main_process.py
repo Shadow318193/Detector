@@ -4,8 +4,6 @@ from tester.rating import UchebaParser
 from data.db_api import DB
 from tester.interface import AvailableParser, RatingParser
 
-db = DB("../db", "detector2.db")
-
 
 class Parser:
     parsers = [
@@ -29,5 +27,3 @@ class Parser:
                 db.set_rating(response)
 
 
-# p = Parser()
-# p.push_data(db)
