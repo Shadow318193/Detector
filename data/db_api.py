@@ -83,8 +83,8 @@ class DB:
                 "\"pbkdf2:sha256:"
                 "260000$QyxkhHYIJ9hRUVJC$e7d12546636b8be81d364116d150cf76729b12cef1fd5084e872200117987d2c\","
                 " 1)")
-            lst = ["DE request", "NL request", "SG request", "RU request",
-                   "USA request", "UK request"]
+            lst = ["DE request", "NL request", "RU request",
+                   "USA request"]
             for i in lst:
                 self.connect("INSERT INTO requests_types (type) VALUES(?)",
                              params=(i,))

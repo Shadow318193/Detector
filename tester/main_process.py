@@ -7,8 +7,8 @@ from tester.interface import AvailableParser, RatingParser
 
 class Parser:
     parsers = [
-        # AvailableTester()
-        # CheckHostParser(),
+        # AvailableTester(),
+        CheckHostParser(),
         UchebaParser()
     ]
 

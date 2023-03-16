@@ -4,7 +4,6 @@ from tester.interface import AvailableParser
 
 
 class CheckHostParser(AvailableParser):
-    @staticmethod
     def get_data(self, urls: list) -> list:
         data_out = []
         methods = {"ru3.node.check-host.net": "RU request",

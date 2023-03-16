@@ -1,4 +1,5 @@
 import requests
+import time
 from tester.interface import AvailableParser
 
 
@@ -14,17 +15,10 @@ class AvailableTester(AvailableParser):
     def get_data(self, urls: list) -> list:
         data = []
         for url in urls:
-            https_proxy = "89.232.123.2:3128"
-            http_proxy = "89.43.10.141:80"
-
-            proxies = {
-                "http": http_proxy,
-                "https": https_proxy,
-            }
             cookies = {
                 'dfjoCvIgkbblF5DJfa551AokP0o': 'igDggjMBG197PLliVZWgCW-B7R0',
-                'LOW433wcIwWHRSdBwilP9srZ5Do': '1677254738',
-                'w7uQRCdBmD7pu80CTALAL32VBhU': '1677341138',
+                'LOW433wcIwWHRSdBwilP9srZ5Do': str(int(time.time())),
+                'w7uQRCdBmD7pu80CTALAL32VBhU': str(int(time.time())),
                 'G2tBy3ekpeZO3qeyhUTDLpkQWZ8': 'h4h2AJeROItN7NP3IXASSaddpG4',
                 'PHPSESSID': 'go6m42natqlt0raf7lgn4rhdsn',
             }
@@ -48,8 +42,7 @@ class AvailableTester(AvailableParser):
             }
 
             signature = requests.get('https://2ip.ru/site-availability/',
-                                    cookies=cookies, headers=headers,
-                                     proxies=proxies).text
+                                    cookies=cookies, headers=headers).text
             signature = signature.split("var services = [")[1].split("{")[1][:-6]. \
                 replace("\n", "").replace("\t", " ").replace("     ", ""). \
                 split("\'")[1].split("\'")[0].split("/?")[1]
