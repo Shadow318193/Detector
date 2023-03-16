@@ -230,10 +230,12 @@ class DB:
         if not site_id:
             site_id = self.connect("""
                                     INSERT INTO sites(url, name) VALUES(?, ?) RETURNING id;
-                                    """, fetchall=True, params=url_name)
+                                    """, fetchall=True, params=url_name[:2])
         site_id = site_id[0][0]
-        self.connect("""INSERT INTO users_sites (user_id, site_id)
-         VALUES(?, ?);""", params=(user_id, site_id,))
+        email = url_name[2] if url_name[2] else None
+        tg_id = url_name[3] if url_name[3] else None
+        self.connect("""INSERT INTO users_sites (user_id, site_id, email, tg_id)
+         VALUES(?, ?);""", params=(user_id, site_id, email, tg_id))
         self.connect(
             """UPDATE sites SET count_users=count_users+1 WHERE id=?;""",
             params=(site_id,))
