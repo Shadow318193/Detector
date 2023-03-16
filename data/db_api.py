@@ -54,8 +54,8 @@ class DB:
             CREATE TABLE IF NOT EXISTS users_sites (
                 user_id INTEGER NOT NULL,
                 site_id INTEGER NOT NULL,
-                tg_id INTEGER DEFAULT NULL,
-                email TEXT DEFAULT NULL,
+                tg_id INTEGER,
+                email TEXT,
                 FOREIGN KEY (user_id) REFERENCES users (id),
                 FOREIGN KEY (site_id) REFERENCES sites (id)
                 );""")
@@ -233,9 +233,9 @@ class DB:
                                     """, fetchall=True, params=url_name[:2])
         site_id = site_id[0][0]
         email = url_name[2] if url_name[2] else None
-        tg_id = url_name[3] if url_name[3] else None
+        tg_id = int(url_name[3]) if url_name[3] and url_name[3].isdigit() else None
         self.connect("""INSERT INTO users_sites (user_id, site_id, email, tg_id)
-         VALUES(?, ?);""", params=(user_id, site_id, email, tg_id))
+         VALUES(?, ?, ?, ?);""", params=(user_id, site_id, email, tg_id))
         self.connect(
             """UPDATE sites SET count_users=count_users+1 WHERE id=?;""",
             params=(site_id,))

@@ -142,11 +142,13 @@ def add_a_website():
     if request.method == "GET":
         return render_template("add.html")
     elif request.method == "POST":
-        if request.form.get("url") and request.form.get("name") and request.form.get("email") and request.form.get("tg_id"):
+        if request.form.get("url") and request.form.get("name"):
             url = request.form["url"]
             if "https://" not in url:
                 url = "https://" + request.form["url"]
-            db.add_site((url, request.form["name"], request.form["email"], request.form["td_ig"]), current_user.id)
+
+            db.add_site((url, request.form["name"], request.form.get("email", ""), request.form.get("tg_id", "")),
+                        current_user.id)
             flash("Сайт добавлен", "success")
             return redirect("/")
         else:
