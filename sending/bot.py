@@ -10,9 +10,9 @@ class SenderBot:
 
     def __init__(self) -> None:
         try:
-            with open("EMAIL_PASSWORD.txt", "r") as f:
+            with open("sending/EMAIL_PASSWORD.txt", "r") as f:
                 self.EMAIL_PASSWORD = f.readlines()[0].strip()
-            with open("TOKEN.txt", "r") as f:
+            with open("sending/TOKEN.txt", "r") as f:
                 self.TOKEN = f.readlines()[0].strip()
         except IndexError:
             print("\033[31m{}".format("Token or email address is empty."))

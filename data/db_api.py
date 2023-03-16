@@ -364,10 +364,10 @@ class DB:
                                  request_type_id=? ORDER BY time DESC LIMIT 2;""",
                                  fetchall=True,
                                  params=(el[0], requests_t[0],))
-                prev_status_code, curr_status_code = o[1][0], o[0][0]
-                prev_duration, curr_duration = o[1][1], o[0][1]
                 if len(o) < 2:
                     continue
+                prev_status_code, curr_status_code = o[1][0], o[0][0]
+                prev_duration, curr_duration = o[1][1], o[0][1]
                 # проверка актуальности данных
                 if prev_status_code < 0:
                     continue

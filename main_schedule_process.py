@@ -10,8 +10,8 @@ db.global_init()
 # print("generate_ok")
 bot = SenderBot()
 
-schedule.every(120).seconds.do(tester.push_data, db=db)
-schedule.every(120).seconds.do(bot.notify, db=db)
+schedule.every(20).seconds.do(tester.push_data, db=db)
+schedule.every(20).seconds.do(bot.notify, db=db)
 
 while True:
     schedule.run_pending()
