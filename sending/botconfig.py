@@ -1,2 +1,0 @@
-TOKEN = ""
-POST_PASSWORD = ""

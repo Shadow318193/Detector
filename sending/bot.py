@@ -2,17 +2,22 @@ import socket
 import telebot
 import smtplib
 from email.message import EmailMessage
-from .botconfig import TOKEN, POST_PASSWORD
 from data.db_api import DB
 
 
 class SenderBot:
-    TOKEN = TOKEN
-    POST_ADDRESS = "detector.esteam@yandex.ru"
-    POST_PASSWORD = POST_PASSWORD
+    EMAIL_ADDRESS = "detector.esteam@yandex.ru"
 
     def __init__(self) -> None:
-        self.tgbot = telebot.TeleBot(token=self.TOKEN)
+        try:
+            with open("EMAIL_PASSWORD.txt", "r") as f:
+                self.EMAIL_PASSWORD = f.readlines()[0].strip()
+            with open("TOKEN.txt", "r") as f:
+                self.TOKEN = f.readlines()[0].strip()
+        except IndexError:
+            print("\033[31m{}".format("Token or email address is empty."))
+        else:
+            self.tgbot = telebot.TeleBot(token=self.TOKEN)
 
     def send_to_telegram(self, tg_user_id: int, message: str) -> None:
         try:
@@ -23,13 +28,13 @@ class SenderBot:
     def send_to_email(self, dest_post_address: str, message_text: str) -> None:
         message = EmailMessage()
         message['Subject'] = 'Auto - report'
-        message['From'] = self.POST_ADDRESS
+        message['From'] = self.EMAIL_ADDRESS
         message['To'] = dest_post_address
         message.set_content(message_text)
         try:
             with smtplib.SMTP('smtp.yandex.ru', 587) as smtp_server:
                 smtp_server.starttls()
-                smtp_server.login(self.POST_ADDRESS, self.POST_PASSWORD)
+                smtp_server.login(self.EMAIL_ADDRESS, self.EMAIL_PASSWORD)
                 smtp_server.send_message(message)
         except socket.gaierror:
             print("\033[31m{}".format("No internet connection to send mail."))
