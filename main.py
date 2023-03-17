@@ -9,8 +9,6 @@ from data.users import User
 from data import db_session
 
 import datetime
-import logging
-import os
 
 from tester.rating import UchebaParser
 
