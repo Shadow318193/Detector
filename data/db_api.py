@@ -122,7 +122,7 @@ class DB:
 
         self.connect("""
                         INSERT INTO requests(duration, status, site_id,
-                         request_type_id, time) VALUES(?, ?, ?, ?, TIME(\"now\", "+3 hours"));
+                         request_type_id, time) VALUES(?, ?, ?, ?, DATETIME("now", "+3 hours"));
                         """, params=(
             data["duration"], data["code"], site_id,
             req_type_id[0][0]))
@@ -406,12 +406,12 @@ class DB:
             if self.connect("""SELECT * FROM rating WHERE site_id=?;""",
                             params=(rate[0], ), fetchall=True):
                 self.connect("""UPDATE rating SET rating=?,
-                 last_time=TIME(\"now\", "+3 hours") WHERE site_id=?""",
+                 last_time=DATETIME("now", "+3 hours") WHERE site_id=?""",
                              params=rate)
 
             else:
                 self.connect("""INSERT INTO rating VALUES(?, ?,
-                 TIME(\"now\", "+3 hours"));""", params=rate)
+                 DATETIME("now", "+3 hours"));""", params=rate)
 
     def set_id_rating(self, id_rating, site_id):
         if not id_rating:

@@ -37,7 +37,6 @@ class CheckHostParser(AvailableParser):
                             "duration": duration,
                             "code": code
                 })
-        print("проход")
         return data_out
 
     def __repr__(self):
