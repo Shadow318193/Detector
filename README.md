@@ -13,5 +13,5 @@
     ![math](https://img.shields.io/badge/math-logo?style=for-the-badge&logo=libreofficemath&logoColor=white&color=blue&cacheSeconds=3600)
 - https://github.com/prok0l  
     ![teamlead](https://img.shields.io/badge/lead-logo?style=for-the-badge&logo=jira&logoColor=white&color=blue&cacheSeconds=3600)
-- https://github.com/ArtSharaev
+- https://github.com/ArtSharaev  
     ![lounger](https://img.shields.io/badge/бездельник-logo?style=for-the-badge&logo=counterstrike&logoColor=white&color=blue&cacheSeconds=3600)
